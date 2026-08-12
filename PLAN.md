@@ -6,15 +6,18 @@ App iOS que consume la API REST de [`inventario-backend`](../inventario-backend)
 
 ## Stack
 
-- UIKit **programatico, sin Storyboards** (ver nota tecnica abajo)
-- Patron MVVM: ViewModel con closures de callback (no Combine/`@Published` — no forma parte de lo pedido), ViewController implementa `UITableViewDataSource`/`Delegate` y se subscribe a los closures
-- Core Data **con el modelo armado 100% en codigo** (`NSManagedObjectModel` via `NSEntityDescription`/`NSAttributeDescription`/`NSRelationshipDescription`), sin archivo `.xcdatamodeld`
+- UIKit con **Storyboard + `@IBOutlet`/`@IBAction` + segues** (asi se enseña en el curso — ver division de trabajo abajo)
+- Patron MVVM: ViewModel con closures de callback (no Combine/`@Published`), ViewController implementa `UITableViewDataSource`/`Delegate` y se subscribe a los closures
+- Core Data **con el modelo armado en el editor visual** (`InventarioModel.xcdatamodeld`) — ver esquema exacto mas abajo
 - `URLSession` + `dataTask(with:completionHandler:)`
 - Keychain para el JWT (sin cambios respecto al planteo original)
 
-### Nota tecnica — por que sin Storyboard ni `.xcdatamodeld`
+### Division de trabajo — por que algunas cosas las armas vos en Xcode
 
-Ambos son formatos editados por GUI en Xcode (XML de Interface Builder / editor visual de entidades). Este plan se escribe desde un entorno sin Xcode disponible, sin forma de abrir/validar esos archivos. Escribirlos a mano a ciegas es un riesgo real de corrupcion. La alternativa — UIKit programatico y `NSManagedObjectModel` armado en codigo — es una tecnica igual de valida y soportada por Apple, y es texto Swift plano que se puede escribir con confianza sin depender del editor visual.
+Storyboard, segues y `.xcdatamodeld` son formatos editados por GUI en Xcode. Este plan se escribe desde un entorno sin Xcode disponible, sin forma de abrir/validar esos archivos — escribirlos a mano a ciegas es un riesgo real de corrupcion. Como el curso los enseña asi (y son requisito), la division queda:
+
+- **Claude escribe:** toda la logica Swift — `ViewController`s con los `@IBOutlet`/`@IBAction` ya declarados con nombres exactos, `ViewModel`s, `Service`s, Core Data, networking. Cada fase incluye el nombre exacto de cada outlet/accion/segue que el `ViewController` espera.
+- **El usuario arma en Xcode:** las escenas del Storyboard (arrastrar UI, poner `Custom Class`, conectar outlets/acciones con Ctrl+arrastrar), los segues entre escenas (con el `Identifier` exacto que el codigo espera), y las entidades/atributos/relaciones en el editor visual de `InventarioModel.xcdatamodeld` (esquema exacto mas abajo, con Codegen en "Class Definition" — asi Xcode genera las clases `NSManagedObject` solo, sin archivos `.swift` manuales para eso).
 
 ## Backend consumido
 
@@ -71,10 +74,11 @@ Cada entidad local de Core Data tiene:
 
 ```
 InventarioApp/
-├── App/                       AppDelegate.swift, SceneDelegate.swift (sin Main.storyboard)
+├── App/                       AppDelegate.swift, SceneDelegate.swift
+├── Main.storyboard             armado en Xcode por el usuario (todas las escenas + segues)
 ├── CoreData/
-│   ├── PersistenceController.swift   NSManagedObjectModel armado en codigo + NSPersistentContainer
-│   └── Entities/               ProductoEntity, CategoriaEntity, ProveedorEntity, ProductoImagenEntity (NSManagedObject a mano)
+│   ├── InventarioModel.xcdatamodeld   armado en Xcode por el usuario (editor visual, esquema abajo)
+│   └── PersistenceController.swift    carga el modelo desde el .xcdatamodeld + NSPersistentContainer
 ├── Networking/
 │   ├── APIClient.swift         URLSession + dataTask, completion handlers
 │   ├── Endpoint.swift, APIError.swift
@@ -96,27 +100,39 @@ InventarioApp/
 
 ---
 
-## Fase 0 — Setup del proyecto (sin Storyboard)
+## Fase 0 — Setup del proyecto
 
 - [x] Repo `inventario-ios` en GitHub (`https://github.com/JasonDavD/inventario-ios`), rama `main`
-- [ ] **Bloqueado hasta tener Mac.** Pasos exactos para crear el proyecto sin Storyboard (el wizard de Xcode no ofrece "programatico" como opcion directa):
-  1. File > New Project > iOS > App. Product Name: `InventarioApp`. Interface: **Storyboard** (unica opcion UIKit del wizard). Guardar DENTRO de esta carpeta del repo (ya tiene `.git`, no crear uno nuevo)
-  2. Borrar `Main.storyboard` del proyecto (Move to Trash)
-  3. En el target > General > "Main Interface", dejarlo vacio. En Info.plist, borrar la key `UIMainStoryboardFile` / "Main storyboard file base name" si aparece
-  4. En `SceneDelegate.swift`, dentro de `scene(_:willConnectTo:options:)`, crear la `UIWindow` y asignar `window.rootViewController` a mano (un `UINavigationController` envolviendo la primera pantalla)
-  5. `LaunchScreen.storyboard` se puede dejar como esta (es solo la imagen de arranque, no cuenta como "UI real")
+- [ ] **Bloqueado hasta tener Mac.** File > New Project > iOS > App. Product Name: `InventarioApp`. Interface: **Storyboard**. Guardar DENTRO de esta carpeta del repo (ya tiene `.git`, no crear uno nuevo)
 - [ ] Estructura de carpetas del repo agregada como grupos en Xcode (file system synchronized groups, default en Xcode 16+)
-- [ ] **Funcional:** la app compila y abre una pantalla en blanco sin storyboard
+- [ ] **Funcional:** la app compila y corre en el simulador con la pantalla default del template
 - [ ] **Probado:** confirmado en Xcode por el usuario
 
 ## Fase 1 — Stack de Core Data
 
-- [~] `CoreData/PersistenceController.swift`: `NSManagedObjectModel` armado en codigo (4 entidades + relaciones con inversa), `NSPersistentContainer`, `saveContext()`
-- [~] `CoreData/Entities/CategoriaEntity.swift`, `ProveedorEntity.swift`, `ProductoEntity.swift`, `ProductoImagenEntity.swift` (subclases `NSManagedObject` escritas a mano, sin codegen de Xcode)
+- [~] `CoreData/PersistenceController.swift`: carga `InventarioModel` desde el `.xcdatamodeld` (no arma el modelo en codigo), `NSPersistentContainer`, `saveContext()`
+- [ ] **Bloqueado hasta tener Mac — armar en el editor visual** (`InventarioModel.xcdatamodeld`, File > New > Core Data Model si el wizard no lo creo solo): las 4 entidades del esquema de abajo, con Codegen = "Class Definition" en cada una (asi Xcode genera las clases `NSManagedObject` solo, no hace falta escribirlas a mano)
 - [ ] **Funcional:** insertar y leer un registro de prueba (`NSFetchRequest`) confirma que el stack levanta sin crashear
 - [ ] **Probado:** pendiente de Mac
 
-**Prioridad al llegar a Mac:** `PersistenceController.swift` es el archivo de mayor riesgo de todo el proyecto — arma relaciones `NSRelationshipDescription` cruzadas (cada relacion to-one tiene su inversa to-many, ida y vuelta) totalmente a mano, sin que el compilador de Xcode ni el validador visual lo hayan revisado nunca. Si la app crashea al arrancar, **empezar a debuggear por este archivo antes que cualquier otro** — un mismatch de nombre entre una relacion y su inversa, o entre `managedObjectClassName` y el `@objc(...)` de la clase, tipicamente se manifiesta como crash al cargar el `NSPersistentContainer`, no como error de compilacion.
+### Esquema de Core Data (armar en el editor visual)
+
+Cada entidad lleva estos 4 atributos de control ademas de los propios — mismo patron `estadoSync`/`apiId` que ya usa `inventario-android`:
+
+| Atributo comun | Tipo | Optional |
+|---|---|---|
+| `localId` | String | No |
+| `apiId` | Integer 64 | Si |
+| `estadoSync` | Integer 16 | No |
+| `pendienteEliminar` | Boolean | No |
+
+**CategoriaEntity:** `nombre` (String), `descripcion` (String, optional). Relacion `productos` → to-many → `ProductoEntity`, inversa `categoria`.
+
+**ProveedorEntity:** `nombre` (String), `telefono` (String, optional), `direccion` (String, optional), `logoUrl` (String, optional), `logoPublicId` (String, optional). Relacion `productos` → to-many → `ProductoEntity`, inversa `proveedor`.
+
+**ProductoEntity:** `nombre` (String), `precio` (Double), `stock` (Integer 32), `fechaRegistro` (Date, optional). Relaciones: `categoria` → to-one → `CategoriaEntity` (inversa `productos`, Delete Rule: Nullify), `proveedor` → to-one → `ProveedorEntity` (inversa `productos`, Delete Rule: Nullify), `imagenes` → to-many → `ProductoImagenEntity` (inversa `producto`, Delete Rule: **Cascade** — borrar un producto borra sus imagenes).
+
+**ProductoImagenEntity:** `url` (String), `publicId` (String), `orden` (Integer 16). Relacion `producto` → to-one → `ProductoEntity` (inversa `imagenes`, Delete Rule: Nullify).
 
 ## Fase 2 — Networking (dataTask) + Login
 
@@ -125,7 +141,8 @@ InventarioApp/
 - [ ] `Auth/KeychainService.swift` (sin cambios — ya escrito, no depende de SwiftUI)
 - [ ] `Auth/SessionManager.swift` reescrito sin Combine/`ObservableObject` (singleton simple con propiedades planas)
 - [ ] `Services/AuthService.swift` (login con completion handler)
-- [ ] `Features/Auth/LoginViewController.swift` + `LoginViewModel.swift` (UIKit programatico, closures)
+- [ ] `Features/Auth/LoginViewController.swift` (con `@IBOutlet`/`@IBAction` declarados) + `LoginViewModel.swift` (closures)
+- [ ] **Bloqueado hasta tener Mac:** armar la escena de Login en `Main.storyboard` — dos `UITextField` (usuario/password) + un `UIButton`, `Custom Class` de la escena = `LoginViewController`, conectar los outlets/action con los nombres exactos que declara el codigo, marcarla como Initial View Controller
 - [ ] **Funcional:** loguearse contra produccion, token en Keychain, error visible con credenciales invalidas, arranque en frio no se percibe como colgada
 - [ ] **Probado:** pendiente de Mac
 
@@ -173,3 +190,4 @@ InventarioApp/
 ## Historial de decisiones
 
 - El plan original (commits `63d4ef3`..`e997f92`) usaba SwiftUI + async/await + sin persistencia local. Se descarto por completo al confirmarse que la rubrica del curso exige UIKit + Core Data + `dataTask`, con el mismo patron offline-first que ya tiene `inventario-android`.
+- El primer intento de UIKit (commits `bf4b0cb`, `7b12bd0`) evitaba Storyboard y `.xcdatamodeld` armando todo por codigo (UI programatica, `NSManagedObjectModel` a mano), por no poder validar formatos de GUI de Xcode sin acceso a Mac. Se descarto al confirmarse que el curso enseña especificamente Storyboard + `@IBOutlet` + segues + el editor visual de Core Data, y que hay que trabajar igual. Quedo la division de trabajo de la seccion "Stack": Claude escribe la logica Swift, el usuario arma en Xcode lo que es puramente visual siguiendo instrucciones exactas.

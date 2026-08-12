@@ -98,6 +98,15 @@ InventarioApp/
 
 `[ ]` pendiente, `[~]` escrito pero no compilado/verificado, `[x]` verificado de verdad en Xcode. Esta sesion corre sin acceso a Mac — ningun `[x]` de "Funcional"/"Probado" hasta que el usuario lo corra.
 
+## Como ayudar una vez que hay Mac disponible
+
+Cuando el usuario tenga Xcode abierto y quiera conectar Storyboard/segues/`.xcdatamodeld`, el agente (esta sesion u otra) **no debe tirar la lista de pasos entera de una** — el agente no puede clickear Xcode, el usuario si. El modo que funciona:
+
+1. Un paso concreto por vez ("Object Library (Cmd+Shift+L), arrastra un UITextField al canvas")
+2. Esperar confirmacion del usuario antes de seguir al siguiente paso
+3. Usar los nombres EXACTOS de outlets/actions/segues/entidades que ya estan en este archivo (Fase 1 tiene el esquema de Core Data completo; cada fase siguiente especifica los nombres de outlets/actions al lado del `ViewController` correspondiente)
+4. Si el usuario reporta un error o crash al correr, revisar primero que los nombres conectados en Xcode coincidan exactamente con los que el `@NSManaged`/`@IBOutlet`/`@IBAction` del codigo Swift espera — la causa mas comun de crash en este flujo es un typo entre lo que se conecto a mano en Xcode y lo que el codigo referencia
+
 ---
 
 ## Fase 0 — Setup del proyecto

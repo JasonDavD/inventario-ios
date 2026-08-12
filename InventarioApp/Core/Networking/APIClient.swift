@@ -7,8 +7,13 @@ final class APIClient {
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
 
-    private init(session: URLSession = .shared) {
-        self.session = session
+    private init() {
+        // Render (plan gratuito) "duerme" el servicio tras inactividad: la primera
+        // request tras eso puede tardar 20-40s en responder. 60s (el default de
+        // URLSession) raspa justo, asi que se sube el margen.
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 90
+        self.session = URLSession(configuration: configuration)
     }
 
     func get<Response: Decodable>(_ endpoint: Endpoint, authenticated: Bool = true) async throws -> Response {

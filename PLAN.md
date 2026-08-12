@@ -12,7 +12,7 @@ App iOS (SwiftUI) que consume la API REST de [`inventario-backend`](../inventari
 
 ## Backend consumido
 
-Repo: `inventario-backend`. Base URL local: `http://localhost:8080`. Base URL produccion: `https://ferreteria-zamora-api.onrender.com`.
+Repo: `inventario-backend`. **Se trabaja siempre contra produccion** (`https://ferreteria-zamora-api.onrender.com`) — las Mac del instituto no tienen forma de levantar el backend local, asi que ese es el default hardcodeado en `Endpoint.baseURL`. Render (plan gratuito) duerme el servicio tras inactividad: la primera request puede tardar 20-40s.
 
 Login: `POST /api/auth/login` -> `{ token, tokenType, username, roles }`. Header en el resto de los endpoints: `Authorization: Bearer <token>`.
 
@@ -62,7 +62,7 @@ Cada fase tiene tareas tecnicas + un criterio "Funcional" (demoable en el simula
 - [~] `Services/AuthService.swift` (login)
 - [~] `Features/Auth/LoginView.swift` + `LoginViewModel.swift`
 - [~] `App/InventarioAppApp.swift` (entry point, arranca en Login o en placeholder si ya hay sesion)
-- [ ] **Funcional:** loguearse contra el backend real (local o Render) con admin/operador/lector, token guardado en Keychain, error visible con credenciales invalidas
+- [ ] **Funcional:** loguearse contra produccion (Render) con admin/operador/lector, token guardado en Keychain, error visible con credenciales invalidas, arranque en frio (20-40s) no se percibe como app colgada
 - [ ] **Probado:** login exitoso + login fallido verificados en el simulador — **pendiente de Mac**
 
 ## Fase 2 — Listado de productos (solo lectura)

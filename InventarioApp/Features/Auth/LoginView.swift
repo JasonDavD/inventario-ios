@@ -39,6 +39,12 @@ struct LoginView: View {
             }
             .buttonStyle(.borderedProminent)
             .disabled(viewModel.username.isEmpty || viewModel.password.isEmpty || viewModel.isLoading)
+
+            if viewModel.isLoading {
+                Text("Puede tardar 20-40s si el servidor estaba inactivo")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding()
     }

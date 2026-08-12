@@ -116,6 +116,8 @@ InventarioApp/
 - [ ] **Funcional:** insertar y leer un registro de prueba (`NSFetchRequest`) confirma que el stack levanta sin crashear
 - [ ] **Probado:** pendiente de Mac
 
+**Prioridad al llegar a Mac:** `PersistenceController.swift` es el archivo de mayor riesgo de todo el proyecto — arma relaciones `NSRelationshipDescription` cruzadas (cada relacion to-one tiene su inversa to-many, ida y vuelta) totalmente a mano, sin que el compilador de Xcode ni el validador visual lo hayan revisado nunca. Si la app crashea al arrancar, **empezar a debuggear por este archivo antes que cualquier otro** — un mismatch de nombre entre una relacion y su inversa, o entre `managedObjectClassName` y el `@objc(...)` de la clase, tipicamente se manifiesta como crash al cargar el `NSPersistentContainer`, no como error de compilacion.
+
 ## Fase 2 — Networking (dataTask) + Login
 
 - [ ] `Networking/APIClient.swift` reescrito con `URLSession.dataTask(with:completionHandler:)`, agrega header `Authorization`, decodifica JSON, mapea errores HTTP

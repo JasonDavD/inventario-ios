@@ -16,6 +16,38 @@ Repo: `inventario-backend`. **Se trabaja siempre contra produccion** (`https://f
 
 Login: `POST /api/auth/login` -> `{ token, tokenType, username, roles }`. Header en el resto de los endpoints: `Authorization: Bearer <token>`.
 
+Repo backend: `https://github.com/JasonDavD/inventario-backend`. Si se retoma este plan desde otra cuenta/maquina sin memoria previa (Engram no viaja entre cuentas de Claude Code), **clonar tambien ese repo al lado de este** — el codigo fuente ahi es la fuente de verdad mas confiable, esta seccion es solo un resumen para no depender de tenerlo clonado.
+
+### Contrato de la API (referencia rapida, sin clonar el backend)
+
+Errores (cualquier endpoint no exitoso): `{ "status": Int, "error": String, "mensaje": String }`.
+
+**Producto** (JSON de `/api/productos`):
+```json
+{
+  "id": 1, "nombre": "...", "precio": 10.5, "stock": 20,
+  "fechaRegistro": "2026-08-12T10:15:30",
+  "categoria": { "id": 1, "nombre": "...", "descripcion": "..." },
+  "proveedor": { "id": 1, "nombre": "...", "telefono": "...", "direccion": "...", "logoUrl": "...", "logoPublicId": "..." },
+  "imagenes": [ { "id": 1, "url": "https://res.cloudinary.com/...", "publicId": "...", "orden": 0 } ]
+}
+```
+`categoria`/`proveedor` pueden venir `null`. `imagenes` siempre es una lista (vacia si no tiene). Al crear/editar (POST/PUT), el body solo necesita `nombre`, `precio`, `stock` y opcionalmente `categoria: {"id": N}` / `proveedor: {"id": N}` (el backend re-busca la entidad completa por id, no confia en el resto del payload anidado).
+
+**Categoria:** `{ "id", "nombre", "descripcion" }`. **Proveedor:** `{ "id", "nombre", "telefono", "direccion", "logoUrl", "logoPublicId" }`.
+
+| Metodo | Ruta | Rol minimo |
+|---|---|---|
+| POST | `/api/auth/login` | Publico |
+| GET | `/api/productos`, `/api/categorias`, `/api/proveedores` | LECTOR |
+| POST/PUT | `/api/productos/{id}` | OPERADOR |
+| DELETE | `/api/productos/{id}` | ADMIN |
+| POST/DELETE | `/api/productos/{id}/imagenes[/{imagenId}]` | OPERADOR |
+| POST/PUT/DELETE | `/api/categorias`, `/api/proveedores` | ADMIN |
+| POST | `/api/proveedores/{id}/logo` | ADMIN |
+
+Subida de imagenes/logo: `multipart/form-data`, campo `archivo`. Maximo 5 imagenes por producto (el backend responde 400 en la sexta).
+
 ## Estructura de carpetas objetivo
 
 ```

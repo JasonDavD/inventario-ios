@@ -39,27 +39,31 @@ InventarioApp/
 
 Cada fase tiene tareas tecnicas + un criterio "Funcional" (demoable en el simulador) + un check de "Probado" (corrido de verdad en Xcode, no solo escrito). Una fase no se marca `[x]` completa hasta que el criterio Funcional fue verificado a mano.
 
+**IMPORTANTE — modo de trabajo actual:** este plan se ejecuta desde una maquina Windows sin acceso a Xcode/macOS. El codigo Swift se escribe y se commitea igual, pero **ningun item de "Funcional" o "Probado" se tilda hasta que el usuario lo corra en una Mac real**. Cada tarea tecnica usa un tercer estado intermedio, `[~]` = escrito pero no compilado/verificado, para distinguirlo de `[x]` = verificado de verdad. No asumir que "escrito" == "funciona".
+
 ---
 
 ## Fase 0 — Setup del proyecto
 
-- [ ] Crear el proyecto en Xcode: File > New Project > iOS > App > SwiftUI, product name `InventarioApp`, interface SwiftUI, min iOS 17
-- [ ] Armar la estructura de carpetas objetivo (grupos/carpetas reales, no solo grupos virtuales)
-- [ ] Repo `inventario-ios` en GitHub, primer commit con el proyecto vacio
-- [ ] **Funcional:** la app compila y corre en el simulador mostrando la pantalla default
+- [x] Repo `inventario-ios` inicializado localmente (rama `main`), `PLAN.md` commiteado
+- [~] Estructura de carpetas y archivos base escrita en disco (sin `.xcodeproj` — eso requiere Xcode)
+- [ ] **Bloqueado hasta tener Mac:** crear el proyecto en Xcode (File > New Project > iOS > App > SwiftUI, product name `InventarioApp`, min iOS 17), guardandolo DENTRO de esta misma carpeta del repo. Con las carpetas "file system synchronized groups" (default en Xcode 16+), los archivos que ya estan en disco aparecen solos en el Project Navigator sin tener que agregarlos a mano
+  - **Ojo:** Xcode va a generar sus propios `InventarioAppApp.swift` y `ContentView.swift` de template dentro de `InventarioApp/`. Hay que borrar esos dos (ya existe un `App/InventarioAppApp.swift` real escrito) para que no queden dos `@main` compitiendo
+- [ ] **Funcional:** la app compila y corre en el simulador
 - [ ] **Probado:** confirmado en Xcode por el usuario
 
 ## Fase 1 — Networking + Login funcional
 
-- [ ] `Models/Auth/LoginRequest.swift`, `LoginResponse.swift`
-- [ ] `Core/Networking/APIClient.swift` (URLSession generico, agrega header Authorization, decodifica JSON, maneja errores HTTP)
-- [ ] `Core/Networking/Endpoint.swift`, `APIError.swift`
-- [ ] `Core/Auth/KeychainService.swift` (guardar/leer/borrar el JWT)
-- [ ] `Core/Auth/SessionManager.swift` (estado de sesion observable, rol actual, logout)
-- [ ] `Services/AuthService.swift` (login)
-- [ ] `Features/Auth/LoginView.swift` + `LoginViewModel.swift`
+- [~] `Models/Auth/LoginRequest.swift`, `LoginResponse.swift`
+- [~] `Core/Networking/APIClient.swift` (URLSession generico con `get`/`post`, agrega header Authorization, decodifica JSON, mapea errores HTTP)
+- [~] `Core/Networking/Endpoint.swift` (solo `.login` por ahora), `APIError.swift`
+- [~] `Core/Auth/KeychainService.swift` (guardar/leer/borrar el JWT via Security framework)
+- [~] `Core/Auth/SessionManager.swift` (estado de sesion observable — token en Keychain, username/roles en UserDefaults, persiste entre relanzamientos)
+- [~] `Services/AuthService.swift` (login)
+- [~] `Features/Auth/LoginView.swift` + `LoginViewModel.swift`
+- [~] `App/InventarioAppApp.swift` (entry point, arranca en Login o en placeholder si ya hay sesion)
 - [ ] **Funcional:** loguearse contra el backend real (local o Render) con admin/operador/lector, token guardado en Keychain, error visible con credenciales invalidas
-- [ ] **Probado:** login exitoso + login fallido verificados en el simulador
+- [ ] **Probado:** login exitoso + login fallido verificados en el simulador — **pendiente de Mac**
 
 ## Fase 2 — Listado de productos (solo lectura)
 

@@ -145,14 +145,23 @@ Cada entidad lleva estos 4 atributos de control ademas de los propios — mismo 
 
 ## Fase 2 — Networking (dataTask) + Login
 
-- [ ] `Networking/APIClient.swift` reescrito con `URLSession.dataTask(with:completionHandler:)`, agrega header `Authorization`, decodifica JSON, mapea errores HTTP
-- [ ] `Networking/Endpoint.swift`, `APIError.swift` (siguen del planteo anterior, agnosticos a UI)
-- [ ] `Auth/KeychainService.swift` (sin cambios — ya escrito, no depende de SwiftUI)
-- [ ] `Auth/SessionManager.swift` reescrito sin Combine/`ObservableObject` (singleton simple con propiedades planas)
-- [ ] `Services/AuthService.swift` (login con completion handler)
-- [ ] `Features/Auth/LoginViewController.swift` (con `@IBOutlet`/`@IBAction` declarados) + `LoginViewModel.swift` (closures)
-- [ ] **Bloqueado hasta tener Mac:** armar la escena de Login en `Main.storyboard` — dos `UITextField` (usuario/password) + un `UIButton`, `Custom Class` de la escena = `LoginViewController`, conectar los outlets/action con los nombres exactos que declara el codigo, marcarla como Initial View Controller
-- [ ] **Funcional:** loguearse contra produccion, token en Keychain, error visible con credenciales invalidas, arranque en frio no se percibe como colgada
+- [~] `Networking/APIClient.swift` reescrito con `URLSession.dataTask(with:completionHandler:)` + `Result<T, APIError>`, agrega header `Authorization`, decodifica JSON, mapea errores HTTP, timeout 90s (arranque en frio de Render), despacha todos los `completion` a `DispatchQueue.main`
+- [x] `Networking/Endpoint.swift`, `APIError.swift` (sin cambios, movidos a `Networking/` sin tocar contenido)
+- [x] `Auth/KeychainService.swift` (sin cambios, movido a `Auth/` sin tocar contenido)
+- [~] `Auth/SessionManager.swift` reescrito sin Combine/`ObservableObject` — singleton simple con propiedades planas
+- [~] `Services/AuthService.swift` (login con completion handler)
+- [~] `Features/Auth/LoginViewController.swift` + `LoginViewModel.swift` (closures, sin Combine)
+- [ ] **Bloqueado hasta tener Mac:** armar la escena de Login en `Main.storyboard`, `Custom Class` = `LoginViewController`, marcarla Initial View Controller. Elementos y conexiones EXACTAS que el codigo espera:
+
+  | Elemento UI | Tipo | Conectar como |
+  |---|---|---|
+  | Campo usuario | `UITextField` | `@IBOutlet` `usernameField` |
+  | Campo password (Secure Text Entry = ON en el Attributes Inspector) | `UITextField` | `@IBOutlet` `passwordField` |
+  | Boton "Ingresar" | `UIButton` | `@IBOutlet` `loginButton` **y** `@IBAction` `loginButtonTapped(_:)` en Touch Up Inside |
+  | Label de error (texto vacio por default, color rojo) | `UILabel` | `@IBOutlet` `errorLabel` |
+  | Indicador de carga | `UIActivityIndicatorView` | `@IBOutlet` `activityIndicator` |
+
+- [ ] **Funcional:** loguearse contra produccion, token en Keychain, error visible con credenciales invalidas, arranque en frio no se percibe como colgada (indicador de carga activo)
 - [ ] **Probado:** pendiente de Mac
 
 ## Fase 3 — Listado de productos offline-first

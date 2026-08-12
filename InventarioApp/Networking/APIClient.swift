@@ -1,0 +1,96 @@
+import Foundation
+
+final class APIClient {
+    static let shared = APIClient()
+
+    private let session: URLSession
+    private let decoder = JSONDecoder()
+    private let encoder = JSONEncoder()
+
+    private init() {
+        // Render (plan gratuito) "duerme" el servicio tras inactividad: la primera
+        // request tras eso puede tardar 20-40s. 60s (el default de URLSession)
+        // raspa justo, asi que se sube el margen.
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 90
+        session = URLSession(configuration: configuration)
+    }
+
+    func get<Response: Decodable>(
+        _ endpoint: Endpoint,
+        authenticated: Bool = true,
+        completion: @escaping (Result<Response, APIError>) -> Void
+    ) {
+        var request = URLRequest(url: endpoint.url)
+        request.httpMethod = "GET"
+        attachAuthIfNeeded(&request, authenticated: authenticated)
+        send(request, completion: completion)
+    }
+
+    func post<Body: Encodable, Response: Decodable>(
+        _ endpoint: Endpoint,
+        body: Body,
+        authenticated: Bool = true,
+        completion: @escaping (Result<Response, APIError>) -> Void
+    ) {
+        var request = URLRequest(url: endpoint.url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        do {
+            request.httpBody = try encoder.encode(body)
+        } catch {
+            completion(.failure(.decoding(error)))
+            return
+        }
+        attachAuthIfNeeded(&request, authenticated: authenticated)
+        send(request, completion: completion)
+    }
+
+    private func attachAuthIfNeeded(_ request: inout URLRequest, authenticated: Bool) {
+        guard authenticated, let token = KeychainService.shared.readToken() else { return }
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    }
+
+    private func send<Response: Decodable>(
+        _ request: URLRequest,
+        completion: @escaping (Result<Response, APIError>) -> Void
+    ) {
+        let task = session.dataTask(with: request) { [weak self] data, response, error in
+            guard let self else { return }
+
+            if error != nil {
+                DispatchQueue.main.async { completion(.failure(.invalidResponse)) }
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse, let data else {
+                DispatchQueue.main.async { completion(.failure(.invalidResponse)) }
+                return
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                if httpResponse.statusCode == 401 {
+                    DispatchQueue.main.async { completion(.failure(.unauthorized)) }
+                    return
+                }
+                let mensaje = (try? JSONDecoder().decode(BackendErrorBody.self, from: data))?.mensaje
+                DispatchQueue.main.async {
+                    completion(.failure(.server(status: httpResponse.statusCode, message: mensaje ?? "Error del servidor")))
+                }
+                return
+            }
+
+            do {
+                let decoded = try self.decoder.decode(Response.self, from: data)
+                DispatchQueue.main.async { completion(.success(decoded)) }
+            } catch {
+                DispatchQueue.main.async { completion(.failure(.decoding(error))) }
+            }
+        }
+        task.resume()
+    }
+}
+
+private struct BackendErrorBody: Decodable {
+    let mensaje: String?
+}

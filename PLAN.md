@@ -178,13 +178,13 @@ Cada entidad lleva estos 4 atributos de control ademas de los propios — mismo 
 
 ## Fase 2 — Networking (dataTask) + Login
 
-- [~] `Networking/APIClient.swift` reescrito con `URLSession.dataTask(with:completionHandler:)` + `Result<T, APIError>`, agrega header `Authorization`, decodifica JSON, mapea errores HTTP, timeout 90s (arranque en frio de Render), despacha todos los `completion` a `DispatchQueue.main`
+- [x] `Networking/APIClient.swift` reescrito con `URLSession.dataTask(with:completionHandler:)` + `Result<T, APIError>`, agrega header `Authorization`, decodifica JSON, mapea errores HTTP, timeout 90s (arranque en frio de Render), despacha todos los `completion` a `DispatchQueue.main`
 - [x] `Networking/Endpoint.swift`, `APIError.swift` (sin cambios, movidos a `Networking/` sin tocar contenido)
 - [x] `Auth/KeychainService.swift` (sin cambios, movido a `Auth/` sin tocar contenido)
-- [~] `Auth/SessionManager.swift` reescrito sin Combine/`ObservableObject` — singleton simple con propiedades planas
-- [~] `Services/AuthService.swift` (login con completion handler)
-- [~] `Features/Auth/LoginViewController.swift` + `LoginViewModel.swift` (closures, sin Combine)
-- [ ] Escena de Login en `Main.storyboard`, `Custom Class` = `LoginViewController`, marcarla Initial View Controller (reemplaza la escena placeholder de Fase 0). Elementos y conexiones EXACTAS que el codigo espera:
+- [x] `Auth/SessionManager.swift` reescrito sin Combine/`ObservableObject` — singleton simple con propiedades planas
+- [x] `Services/AuthService.swift` (login con completion handler)
+- [x] `Features/Auth/LoginViewController.swift` + `LoginViewModel.swift` (closures, sin Combine)
+- [x] Escena de Login en `Main.storyboard`, `Custom Class` = `LoginViewController`, Initial View Controller (reemplaza la escena placeholder de Fase 0). Los elementos van dentro de un `UIStackView` vertical centrado. Elementos y conexiones:
 
   | Elemento UI | Tipo | Conectar como |
   |---|---|---|
@@ -194,8 +194,12 @@ Cada entidad lleva estos 4 atributos de control ademas de los propios — mismo 
   | Label de error (texto vacio por default, color rojo) | `UILabel` | `@IBOutlet` `errorLabel` |
   | Indicador de carga | `UIActivityIndicatorView` | `@IBOutlet` `activityIndicator` |
 
-- [ ] **Funcional:** loguearse contra produccion, token en Keychain, error visible con credenciales invalidas, arranque en frio no se percibe como colgada (indicador de carga activo)
-- [ ] **Probado:** pendiente de Mac
+- [x] Fix: `APIClient` mapeaba **todo** 401 a `.unauthorized` ("Sesion expirada"). En el login un 401 es "credenciales malas", no sesion vencida. Ahora solo se mapea a `.unauthorized` si la request iba autenticada; en el login cae en `.server` y se muestra el `mensaje` del backend
+- [x] **Funcional (verificado en simulador):** validacion local con campos vacios, indicador de carga activo con el boton deshabilitado durante la request, error de red visible al timeout, y credenciales invalidas muestran "Usuario o password incorrectos" — el mensaje real que manda el backend
+- [ ] **Funcional (pendiente):** login exitoso contra produccion con credenciales reales, y token efectivamente guardado en Keychain. Lo corre el usuario: el agente no ingresa credenciales
+- [x] **Probado:** corrido en el simulador iPhone 16e, verificado por screenshot en cada paso
+
+> **Arranque en frio de Render, medido.** Con el servicio dormido, `POST /api/auth/login` no respondio en 90s y la app mostro "No se pudo conectar al servidor" — el timeout de 90s no alcanza. Ya despierto, la misma request responde en ~1.6s. `GET /` despierta el servicio y contesta 302 rapido, asi que sirve como ping de warm-up. A tener en cuenta para el `SyncManager` de Fase 4: conviene despertar el backend antes de sincronizar, o el primer sync del dia va a fallar por timeout.
 
 ## Fase 3 — Listado de productos offline-first
 

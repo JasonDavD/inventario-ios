@@ -24,7 +24,7 @@ final class APIClient {
         var request = URLRequest(url: endpoint.url)
         request.httpMethod = "GET"
         attachAuthIfNeeded(&request, authenticated: authenticated)
-        send(request, completion: completion)
+        send(request, authenticated: authenticated, completion: completion)
     }
 
     func post<Body: Encodable, Response: Decodable>(
@@ -43,7 +43,7 @@ final class APIClient {
             return
         }
         attachAuthIfNeeded(&request, authenticated: authenticated)
-        send(request, completion: completion)
+        send(request, authenticated: authenticated, completion: completion)
     }
 
     private func attachAuthIfNeeded(_ request: inout URLRequest, authenticated: Bool) {
@@ -53,6 +53,7 @@ final class APIClient {
 
     private func send<Response: Decodable>(
         _ request: URLRequest,
+        authenticated: Bool,
         completion: @escaping (Result<Response, APIError>) -> Void
     ) {
         let task = session.dataTask(with: request) { [weak self] data, response, error in
@@ -69,7 +70,10 @@ final class APIClient {
             }
 
             guard (200...299).contains(httpResponse.statusCode) else {
-                if httpResponse.statusCode == 401 {
+                // Un 401 solo significa "sesion vencida" si la request iba con token.
+                // En el login (authenticated: false) significa credenciales malas, y
+                // ahi lo que sirve es el `mensaje` que manda el backend.
+                if httpResponse.statusCode == 401, authenticated {
                     DispatchQueue.main.async { completion(.failure(.unauthorized)) }
                     return
                 }

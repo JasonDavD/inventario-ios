@@ -164,9 +164,7 @@ final class LoginViewController: UIViewController {
     }
 
     private func aplicarTituloLink(_ boton: UIButton, texto: String) {
-        boton.configuration?.title = texto
-        boton.configuration?.titleTextAttributesTransformer = Theme.TextStyle.labelMD
-            .transformadorTitulo(color: Theme.Color.charcoalMuted)
+        boton.aplicarTitulo(texto, estilo: .labelMD, color: Theme.Color.charcoalMuted)
     }
 
     /// El DESIGN.md define el ritmo vertical por bloque; se aplica con
@@ -300,9 +298,11 @@ final class LoginViewController: UIViewController {
             ? Theme.Color.charcoalDeep
             : Theme.Color.outline
 
-        rememberButton.configuration?.title = "Mantener sesion iniciada"
-        rememberButton.configuration?.titleTextAttributesTransformer = Theme.TextStyle.bodyMD
-            .transformadorTitulo(color: Theme.Color.charcoalMuted)
+        rememberButton.aplicarTitulo(
+            "Mantener sesion iniciada",
+            estilo: .bodyMD,
+            color: Theme.Color.charcoalMuted
+        )
     }
 
     // MARK: - Teclado

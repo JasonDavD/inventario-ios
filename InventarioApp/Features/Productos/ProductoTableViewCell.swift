@@ -9,6 +9,8 @@ final class ProductoTableViewCell: UITableViewCell {
     @IBOutlet weak var nombreLabel: UILabel!
     @IBOutlet weak var categoriaChipView: UIView!
     @IBOutlet weak var categoriaLabel: UILabel!
+    @IBOutlet weak var pendienteChipView: UIView!
+    @IBOutlet weak var pendienteLabel: UILabel!
     @IBOutlet weak var precioLabel: UILabel!
     @IBOutlet weak var stockLabel: UILabel!
 
@@ -16,9 +18,12 @@ final class ProductoTableViewCell: UITableViewCell {
         super.awakeFromNib()
         backgroundColor = Theme.Color.surfaceContainerLowest
 
+        [categoriaChipView, pendienteChipView].forEach { chip in
+            chip?.layer.cornerRadius = Theme.Radius.base
+            chip?.layer.cornerCurve = .continuous
+        }
         categoriaChipView.backgroundColor = Theme.Color.surfaceTonal
-        categoriaChipView.layer.cornerRadius = Theme.Radius.base
-        categoriaChipView.layer.cornerCurve = .continuous
+        pendienteChipView.backgroundColor = Theme.Color.industrialOrange.withAlphaComponent(0.12)
 
         let fondoSeleccion = UIView()
         fondoSeleccion.backgroundColor = Theme.Color.surfaceTonal
@@ -39,6 +44,15 @@ final class ProductoTableViewCell: UITableViewCell {
             .labelMD,
             color: Theme.Color.charcoalMuted,
             texto: categoria?.uppercased(),
+            alineacion: .center
+        )
+
+        // Cambio local que todavia no llego al servidor.
+        pendienteChipView.isHidden = (producto.estadoSync == 1)
+        pendienteLabel.aplicar(
+            .labelMD,
+            color: Theme.Color.industrialOrange,
+            texto: "PENDIENTE",
             alineacion: .center
         )
 

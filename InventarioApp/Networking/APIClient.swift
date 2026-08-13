@@ -1,5 +1,10 @@
 import Foundation
 
+/// Respuesta para endpoints que no devuelven cuerpo (tipicamente DELETE con
+/// 204 No Content). Sin esto, `send` intentaria decodificar un body vacio y
+/// fallaria con un error de decoding aunque la operacion haya salido bien.
+struct RespuestaVacia: Decodable {}
+
 final class APIClient {
     static let shared = APIClient()
 
@@ -31,6 +36,8 @@ final class APIClient {
         session = URLSession(configuration: configuration)
     }
 
+    // MARK: - Verbos
+
     func get<Response: Decodable>(
         _ endpoint: Endpoint,
         authenticated: Bool = true,
@@ -48,8 +55,40 @@ final class APIClient {
         authenticated: Bool = true,
         completion: @escaping (Result<Response, APIError>) -> Void
     ) {
+        enviarConCuerpo(endpoint, metodo: "POST", body: body, authenticated: authenticated, completion: completion)
+    }
+
+    func put<Body: Encodable, Response: Decodable>(
+        _ endpoint: Endpoint,
+        body: Body,
+        authenticated: Bool = true,
+        completion: @escaping (Result<Response, APIError>) -> Void
+    ) {
+        enviarConCuerpo(endpoint, metodo: "PUT", body: body, authenticated: authenticated, completion: completion)
+    }
+
+    func delete<Response: Decodable>(
+        _ endpoint: Endpoint,
+        authenticated: Bool = true,
+        completion: @escaping (Result<Response, APIError>) -> Void
+    ) {
         var request = URLRequest(url: endpoint.url)
-        request.httpMethod = "POST"
+        request.httpMethod = "DELETE"
+        attachAuthIfNeeded(&request, authenticated: authenticated)
+        send(request, authenticated: authenticated, completion: completion)
+    }
+
+    // MARK: - Interno
+
+    private func enviarConCuerpo<Body: Encodable, Response: Decodable>(
+        _ endpoint: Endpoint,
+        metodo: String,
+        body: Body,
+        authenticated: Bool,
+        completion: @escaping (Result<Response, APIError>) -> Void
+    ) {
+        var request = URLRequest(url: endpoint.url)
+        request.httpMethod = metodo
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         do {
             request.httpBody = try encoder.encode(body)
@@ -98,6 +137,12 @@ final class APIClient {
                 DispatchQueue.main.async {
                     completion(.failure(.server(status: httpResponse.statusCode, message: mensaje ?? "Error del servidor")))
                 }
+                return
+            }
+
+            // 204 / cuerpo vacio: exito sin nada que decodificar.
+            if data.isEmpty, let vacia = RespuestaVacia() as? Response {
+                DispatchQueue.main.async { completion(.success(vacia)) }
                 return
             }
 

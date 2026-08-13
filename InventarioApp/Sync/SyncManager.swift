@@ -1,19 +1,19 @@
 import Foundation
 import CoreData
 
-/// Sincronizacion con el backend. Mismo patron que `inventario-android`.
+/// Sincronizacion bidireccional con el backend. Mismo patron que
+/// `inventario-android`.
 ///
-/// El plan completo (PLAN.md, Fase 4) tiene tres pasos, en este orden:
-///   1. Subir pendientes (`estadoSync == 0`) — todavia no implementado
-///   2. Procesar bajas (`pendienteEliminar`) — todavia no implementado
-///   3. Bajar del servidor y hacer upsert local — **esto es lo que hay acá**
+/// `sincronizar()` corre tres pasos, **en este orden y no en otro**:
+///   1. Sube lo pendiente (`estadoSync == 0`): POST si no tiene `apiId`, PUT si lo tiene
+///   2. Procesa las bajas (`pendienteEliminar`): DELETE y recien ahi borra la fila local
+///   3. Baja del servidor y hace upsert local por `apiId`
 ///
-/// El paso 3 se adelanto a Fase 3 porque sin el no hay forma de llenar Core Data
-/// y el listado no se puede demostrar.
+/// El orden es lo que hace que el offline funcione. Si el paso 3 corriera
+/// primero, pisaria con la version del servidor los cambios locales que todavia
+/// no se subieron — se perderia el trabajo hecho sin conexion.
 ///
-/// **El orden importa:** cuando existan los pasos 1 y 2, tienen que correr antes
-/// del 3. Bajar primero pisaria los cambios locales que todavia no se subieron.
-/// Mientras tanto, `upsert` protege lo pendiente salteando toda fila con
+/// Como segunda linea de defensa, el upsert saltea toda fila con
 /// `estadoSync == 0` o `pendienteEliminar == true`.
 final class SyncManager {
 
@@ -23,7 +23,125 @@ final class SyncManager {
 
     private init() {}
 
-    // MARK: - Bajada del servidor
+    // MARK: - Entrada
+
+    /// Si falla la subida, se corta y no se baja nada: bajar despues de una
+    /// subida fallida mostraria la version del servidor como si el cambio local
+    /// se hubiera perdido, cuando en realidad sigue pendiente.
+    func sincronizar(completion: @escaping (Result<Void, APIError>) -> Void) {
+        subirPendientes { [weak self] resultado in
+            guard let self else { return }
+            switch resultado {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success:
+                self.procesarBajas { [weak self] resultado in
+                    guard let self else { return }
+                    switch resultado {
+                    case .failure(let error):
+                        completion(.failure(error))
+                    case .success:
+                        self.descargarDelServidor(completion: completion)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Paso 1: subir pendientes
+
+    private func subirPendientes(completion: @escaping (Result<Void, APIError>) -> Void) {
+        let request = NSFetchRequest<ProductoEntity>(entityName: "ProductoEntity")
+        request.predicate = NSPredicate(format: "estadoSync == 0 AND pendienteEliminar == NO")
+        let pendientes = (try? contexto.fetch(request)) ?? []
+        subirSiguiente(pendientes, completion: completion)
+    }
+
+    /// Se sube de a uno y en secuencia, no en paralelo: cada POST devuelve el
+    /// `apiId` que hay que guardar, y disparar todo junto contra un backend
+    /// dormido en Render es la forma mas rapida de que todo timeoutee.
+    private func subirSiguiente(
+        _ restantes: [ProductoEntity],
+        completion: @escaping (Result<Void, APIError>) -> Void
+    ) {
+        var cola = restantes
+        guard let producto = cola.popLast() else {
+            PersistenceController.shared.saveContext()
+            completion(.success(()))
+            return
+        }
+
+        let cuerpo = ProductoRequest(entidad: producto)
+
+        let alTerminar: (Result<ProductoDTO, APIError>) -> Void = { [weak self] resultado in
+            guard let self else { return }
+            switch resultado {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success(let dto):
+                // En un POST este es el id que asigno el servidor; en un PUT es
+                // el mismo que ya tenia. Se guarda igual en los dos casos.
+                producto.apiId = NSNumber(value: dto.id)
+                producto.estadoSync = 1
+                self.subirSiguiente(cola, completion: completion)
+            }
+        }
+
+        if let apiId = producto.apiId {
+            APIClient.shared.put(.producto(apiId: apiId.int64Value), body: cuerpo, completion: alTerminar)
+        } else {
+            APIClient.shared.post(.productos, body: cuerpo, completion: alTerminar)
+        }
+    }
+
+    // MARK: - Paso 2: procesar bajas
+
+    private func procesarBajas(completion: @escaping (Result<Void, APIError>) -> Void) {
+        let request = NSFetchRequest<ProductoEntity>(entityName: "ProductoEntity")
+        request.predicate = NSPredicate(format: "pendienteEliminar == YES")
+        let bajas = (try? contexto.fetch(request)) ?? []
+        borrarSiguiente(bajas, completion: completion)
+    }
+
+    private func borrarSiguiente(
+        _ restantes: [ProductoEntity],
+        completion: @escaping (Result<Void, APIError>) -> Void
+    ) {
+        var cola = restantes
+        guard let producto = cola.popLast() else {
+            PersistenceController.shared.saveContext()
+            completion(.success(()))
+            return
+        }
+
+        guard let apiId = producto.apiId else {
+            // Nunca llego al servidor: no hay nada que borrar alla.
+            contexto.delete(producto)
+            borrarSiguiente(cola, completion: completion)
+            return
+        }
+
+        APIClient.shared.delete(.producto(apiId: apiId.int64Value)) { [weak self] (resultado: Result<RespuestaVacia, APIError>) in
+            guard let self else { return }
+            switch resultado {
+            case .success:
+                self.contexto.delete(producto)
+                self.borrarSiguiente(cola, completion: completion)
+            case .failure(let error):
+                // Un 404 significa que en el servidor ya no esta: el objetivo
+                // ya se cumplio, asi que se borra la fila local igual. Sin esto
+                // la baja quedaria trabada para siempre reintentando.
+                if case .server(let status, _) = error, status == 404 {
+                    self.contexto.delete(producto)
+                    self.borrarSiguiente(cola, completion: completion)
+                } else {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+
+    // MARK: - Paso 3: bajada del servidor
 
     /// Baja categorias, proveedores y productos, en ese orden: un producto
     /// referencia a los otros dos, asi que tienen que existir localmente antes.
@@ -80,6 +198,7 @@ final class SyncManager {
             entidad.nombre = dto.nombre
             entidad.descripcion = dto.descripcion
         }
+        eliminarLocalesQueElServidorYaNoTiene("CategoriaEntity", apiIds: Set(dtos.map(\.id)))
     }
 
     private func upsertProveedores(_ dtos: [ProveedorDTO]) {
@@ -96,6 +215,7 @@ final class SyncManager {
             entidad.logoUrl = dto.logoUrl
             entidad.logoPublicId = dto.logoPublicId
         }
+        eliminarLocalesQueElServidorYaNoTiene("ProveedorEntity", apiIds: Set(dtos.map(\.id)))
     }
 
     private func upsertProductos(_ dtos: [ProductoDTO]) {
@@ -120,12 +240,11 @@ final class SyncManager {
 
             reemplazarImagenes(de: entidad, con: dto.imagenes ?? [])
         }
+        eliminarLocalesQueElServidorYaNoTiene("ProductoEntity", apiIds: Set(dtos.map(\.id)))
     }
 
     /// Las imagenes todavia no se editan localmente (Fase 5), asi que la version
     /// del servidor es la unica verdad: se borran las locales y se reinsertan.
-    /// La regla de borrado de la relacion es Cascade, pero se borran explicito
-    /// para no depender de eso al reasignar el set.
     private func reemplazarImagenes(de producto: ProductoEntity, con dtos: [ImagenDTO]) {
         if let existentes = producto.imagenes as? Set<ProductoImagenEntity> {
             existentes.forEach { contexto.delete($0) }
@@ -170,6 +289,24 @@ final class SyncManager {
         nueva.setValue(Int16(1), forKey: "estadoSync")
         nueva.setValue(false, forKey: "pendienteEliminar")
         return nueva
+    }
+
+    /// Borra lo que alguien elimino desde el portal web. Sin esto, un producto
+    /// borrado en el servidor sobreviviria para siempre en el telefono.
+    ///
+    /// Solo toca filas ya sincronizadas y con `apiId`: lo pendiente de subir no
+    /// se toca, y lo que nunca se subio no existe alla por definicion.
+    private func eliminarLocalesQueElServidorYaNoTiene(_ nombreEntidad: String, apiIds: Set<Int64>) {
+        let request = NSFetchRequest<NSManagedObject>(entityName: nombreEntidad)
+        request.predicate = NSPredicate(format: "estadoSync == 1 AND apiId != nil")
+        let locales = (try? contexto.fetch(request)) ?? []
+
+        for local in locales {
+            guard let apiId = local.value(forKey: "apiId") as? NSNumber else { continue }
+            if !apiIds.contains(apiId.int64Value) {
+                contexto.delete(local)
+            }
+        }
     }
 
     private func buscarPorApiId<T: NSManagedObject>(

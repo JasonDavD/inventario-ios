@@ -15,8 +15,16 @@ final class ProductoListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         aplicarEstilos()
+        configurarBotonNuevo()
         configurarTabla()
         bindViewModel()
+        viewModel.cargarLocales()
+    }
+
+    /// Al volver del formulario hay que releer: el producto nuevo o editado ya
+    /// esta en Core Data.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         viewModel.cargarLocales()
     }
 
@@ -77,6 +85,20 @@ final class ProductoListViewController: UIViewController {
         salirButton.tintColor = Theme.Color.charcoalMuted
     }
 
+    /// El "+" se agrega por codigo y no en el Storyboard: el editor visual no
+    /// deja poner dos items a la derecha sin pelear con el XML, y esto es una
+    /// linea.
+    private func configurarBotonNuevo() {
+        let nuevo = UIBarButtonItem(
+            image: UIImage(systemName: "plus"),
+            style: .plain,
+            target: self,
+            action: #selector(nuevoProductoTapped)
+        )
+        nuevo.tintColor = Theme.Color.charcoalDeep
+        navigationItem.rightBarButtonItems = [nuevo, sincronizarButton]
+    }
+
     private func configurarTabla() {
         tableView.dataSource = self
         tableView.delegate = self
@@ -135,6 +157,17 @@ final class ProductoListViewController: UIViewController {
         viewModel.sincronizar()
     }
 
+    @objc private func nuevoProductoTapped() {
+        performSegue(withIdentifier: "irAFormularioProducto", sender: nil)
+    }
+
+    /// `sender` nil = alta; con un `ProductoEntity` = edicion.
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "irAFormularioProducto",
+              let destino = segue.destination as? ProductoFormViewController else { return }
+        destino.configurar(con: sender as? ProductoEntity)
+    }
+
     private func mostrarError(_ mensaje: String) {
         let alert = UIAlertController(
             title: "No se pudo sincronizar",
@@ -171,6 +204,33 @@ extension ProductoListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // Fase 5 reemplaza esto por el segue al detalle del producto.
+        // Fase 5 mete el detalle en el medio; por ahora se va derecho a editar.
+        performSegue(withIdentifier: "irAFormularioProducto", sender: viewModel.productos[indexPath.row])
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+        let eliminar = UIContextualAction(style: .destructive, title: "Eliminar") { [weak self] _, _, listo in
+            self?.confirmarEliminacion(en: indexPath)
+            listo(true)
+        }
+        eliminar.backgroundColor = Theme.Color.error
+        return UISwipeActionsConfiguration(actions: [eliminar])
+    }
+
+    private func confirmarEliminacion(en indexPath: IndexPath) {
+        let producto = viewModel.productos[indexPath.row]
+        let alert = UIAlertController(
+            title: "Eliminar producto",
+            message: "\(producto.nombre ?? "Este producto") se va a borrar del servidor en la proxima sincronizacion.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Eliminar", style: .destructive) { [weak self] _ in
+            self?.viewModel.eliminar(en: indexPath.row)
+        })
+        present(alert, animated: true)
     }
 }

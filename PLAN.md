@@ -250,11 +250,24 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 
 ## Fase 4 — CRUD local + sincronizacion bidireccional
 
-- [ ] `Sync/SyncManager.swift`: sube pendientes (`estadoSync == 0`), procesa bajas (`pendienteEliminar`), baja del servidor y hace upsert local — mismo patron que `insertarDesdeApi`/`actualizarDesdeApi`/`marcarSincronizado` de Android
-- [ ] `Features/Productos/ProductoFormViewController.swift` (alta/edicion), guarda primero en Core Data con `estadoSync = 0`
-- [ ] Eliminar producto = soft delete local (`pendienteEliminar = true`) hasta sincronizar
-- [ ] **Funcional:** crear/editar/eliminar un producto sin conexion, despues sincronizar y verlo reflejado en el portal web Thymeleaf
-- [ ] **Probado:** pendiente de Mac
+- [x] `Networking/APIClient.swift`: suma PUT y DELETE, y `RespuestaVacia` para endpoints que contestan 204 sin cuerpo (sin eso, decodificar un body vacio falla aunque la operacion haya salido bien)
+- [x] `Models/Inventario/ProductoRequest.swift`: cuerpo de POST/PUT. **No es el mismo shape que `ProductoDTO`** — el backend espera `nombre`, `precio`, `stock` y las relaciones como `{"id": N}`
+- [x] `Sync/SyncManager.sincronizar()`: sube pendientes → procesa bajas → baja del servidor, en ese orden
+- [x] `Features/Productos/ProductoFormViewController.swift` (alta/edicion), guarda en Core Data con `estadoSync = 0`
+- [x] Eliminar producto = soft delete local (`pendienteEliminar = true`) hasta sincronizar. Un producto que nunca llego al servidor (`apiId == nil`) se borra directo
+- [x] Chip PENDIENTE en la celda: sin eso la demo de offline no se puede leer
+- [x] Reconciliacion de borrados del servidor (ver nota abajo)
+- [x] **Funcional:** verificado el ciclo completo leyendo el SQLite en cada paso — alta local (`apiId` NULL, `estadoSync` 0) → sync → POST (`apiId` asignado, `estadoSync` 1); edicion → `estadoSync` 0 con `apiId` intacto → sync → PUT; baja → `pendienteEliminar` 1 con la fila todavia local → sync → DELETE y recien ahi se borra
+- [x] **Funcional (offline):** producto creado con el servidor inalcanzable queda PENDIENTE, el sync falla sin perder nada, y al volver la conexion se sube y toma su `apiId`
+- [ ] **Pendiente de confirmar:** verlo reflejado en el portal web Thymeleaf. El agente no puede entrar al portal; lo confirma el usuario
+
+> **El orden de los tres pasos es lo que hace que el offline funcione.** Si la bajada corriera primero, pisaria con la version del servidor los cambios locales que todavia no se subieron. Como segunda linea de defensa, el upsert saltea toda fila con `estadoSync == 0` o `pendienteEliminar == true`.
+
+> **Si falla la subida se corta y no se baja nada.** Bajar despues de una subida fallida mostraria la version del servidor como si el cambio local se hubiera perdido, cuando en realidad sigue pendiente.
+
+> **Reconciliacion de borrados.** El upsert tambien borra las filas locales cuyo `apiId` ya no viene del servidor — sin eso, un producto borrado desde el portal web sobrevivia para siempre en el telefono. Solo toca filas con `estadoSync == 1` y `apiId` no nulo.
+
+> **Tercera trampa de `UIButton.Configuration`** (van tres, ver la seccion de Sistema de diseño). Mutar `configuration?.title` por optional chaining no pisa el *state title* que quedo en el Storyboard, y como ese texto suele parecerse al real, el boton muestra un valor viejo que parece correcto. Sintoma real: el selector de categoria decia "Sin categoria" en un producto que SI tenia categoria — y se notaba solo porque el color del texto era el de valor seleccionado y no el de placeholder. Se resolvio con `UIButton.aplicarTitulo(_:estilo:color:)`, que rearma la struct entera y limpia el state title.
 
 ## Fase 5 — Imagenes (requiere producto ya sincronizado)
 

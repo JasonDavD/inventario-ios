@@ -279,23 +279,45 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chp-00-001">
-                                                    <rect key="frame" x="20" y="46" width="80" height="24"/>
+                                                <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="stk-cp-001">
+                                                    <rect key="frame" x="20" y="46" width="180" height="24"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CATEGORIA" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ct-001">
-                                                            <rect key="frame" x="8" y="4" width="64" height="16"/>
-                                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chp-00-001">
+                                                            <rect key="frame" x="0.0" y="0.0" width="80" height="24"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CATEGORIA" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ct-001">
+                                                                    <rect key="frame" x="8" y="4" width="64" height="16"/>
+                                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <constraints>
+                                                                <constraint firstItem="lbl-ct-001" firstAttribute="leading" secondItem="chp-00-001" secondAttribute="leading" constant="8" id="cst-ch-001"/>
+                                                                <constraint firstAttribute="trailing" secondItem="lbl-ct-001" secondAttribute="trailing" constant="8" id="cst-ch-002"/>
+                                                                <constraint firstItem="lbl-ct-001" firstAttribute="top" secondItem="chp-00-001" secondAttribute="top" constant="4" id="cst-ch-003"/>
+                                                                <constraint firstAttribute="bottom" secondItem="lbl-ct-001" secondAttribute="bottom" constant="4" id="cst-ch-004"/>
+                                                            </constraints>
+                                                        </view>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chp-pd-001">
+                                                            <rect key="frame" x="88" y="0.0" width="92" height="24"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PENDIENTE" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-pd-001">
+                                                                    <rect key="frame" x="8" y="4" width="76" height="16"/>
+                                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <constraints>
+                                                                <constraint firstItem="lbl-pd-001" firstAttribute="leading" secondItem="chp-pd-001" secondAttribute="leading" constant="8" id="cst-pd-001"/>
+                                                                <constraint firstAttribute="trailing" secondItem="lbl-pd-001" secondAttribute="trailing" constant="8" id="cst-pd-002"/>
+                                                                <constraint firstItem="lbl-pd-001" firstAttribute="top" secondItem="chp-pd-001" secondAttribute="top" constant="4" id="cst-pd-003"/>
+                                                                <constraint firstAttribute="bottom" secondItem="lbl-pd-001" secondAttribute="bottom" constant="4" id="cst-pd-004"/>
+                                                            </constraints>
+                                                        </view>
                                                     </subviews>
-                                                    <constraints>
-                                                        <constraint firstItem="lbl-ct-001" firstAttribute="leading" secondItem="chp-00-001" secondAttribute="leading" constant="8" id="cst-ch-001"/>
-                                                        <constraint firstAttribute="trailing" secondItem="lbl-ct-001" secondAttribute="trailing" constant="8" id="cst-ch-002"/>
-                                                        <constraint firstItem="lbl-ct-001" firstAttribute="top" secondItem="chp-00-001" secondAttribute="top" constant="4" id="cst-ch-003"/>
-                                                        <constraint firstAttribute="bottom" secondItem="lbl-ct-001" secondAttribute="bottom" constant="4" id="cst-ch-004"/>
-                                                    </constraints>
-                                                </view>
+                                                </stackView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="S/ 0.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-pr-001">
                                                     <rect key="frame" x="273" y="14" width="100" height="24"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -312,11 +334,11 @@
                                             <constraints>
                                                 <constraint firstItem="lbl-nb-001" firstAttribute="leading" secondItem="cnt-00-001" secondAttribute="leading" constant="20" id="cst-cl-001"/>
                                                 <constraint firstItem="lbl-nb-001" firstAttribute="top" secondItem="cnt-00-001" secondAttribute="top" constant="14" id="cst-cl-002"/>
-                                                <constraint firstItem="chp-00-001" firstAttribute="leading" secondItem="cnt-00-001" secondAttribute="leading" constant="20" id="cst-cl-003"/>
-                                                <constraint firstItem="chp-00-001" firstAttribute="top" secondItem="lbl-nb-001" secondAttribute="bottom" constant="8" id="cst-cl-004"/>
-                                                <constraint firstAttribute="bottom" secondItem="chp-00-001" secondAttribute="bottom" constant="14" id="cst-cl-005"/>
+                                                <constraint firstItem="stk-cp-001" firstAttribute="leading" secondItem="cnt-00-001" secondAttribute="leading" constant="20" id="cst-cl-003"/>
+                                                <constraint firstItem="stk-cp-001" firstAttribute="top" secondItem="lbl-nb-001" secondAttribute="bottom" constant="8" id="cst-cl-004"/>
+                                                <constraint firstAttribute="bottom" secondItem="stk-cp-001" secondAttribute="bottom" constant="14" id="cst-cl-005"/>
                                                 <constraint firstItem="lbl-pr-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lbl-nb-001" secondAttribute="trailing" constant="12" id="cst-cl-006"/>
-                                                <constraint firstItem="lbl-pr-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="chp-00-001" secondAttribute="trailing" constant="12" id="cst-cl-007"/>
+                                                <constraint firstItem="lbl-pr-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="stk-cp-001" secondAttribute="trailing" constant="12" id="cst-cl-007"/>
                                                 <constraint firstAttribute="trailing" secondItem="lbl-pr-001" secondAttribute="trailing" constant="20" id="cst-cl-008"/>
                                                 <constraint firstItem="lbl-pr-001" firstAttribute="top" secondItem="cnt-00-001" secondAttribute="top" constant="14" id="cst-cl-009"/>
                                                 <constraint firstAttribute="trailing" secondItem="lbl-st-001" secondAttribute="trailing" constant="20" id="cst-cl-010"/>
@@ -328,6 +350,8 @@
                                             <outlet property="categoriaChipView" destination="chp-00-001" id="out-cl-001"/>
                                             <outlet property="categoriaLabel" destination="lbl-ct-001" id="out-cl-002"/>
                                             <outlet property="nombreLabel" destination="lbl-nb-001" id="out-cl-003"/>
+                                            <outlet property="pendienteChipView" destination="chp-pd-001" id="out-cl-006"/>
+                                            <outlet property="pendienteLabel" destination="lbl-pd-001" id="out-cl-007"/>
                                             <outlet property="precioLabel" destination="lbl-pr-001" id="out-cl-004"/>
                                             <outlet property="stockLabel" destination="lbl-st-001" id="out-cl-005"/>
                                         </connections>
@@ -375,11 +399,169 @@
                         <outlet property="salirButton" destination="bbi-sl-001" id="out-pv-003"/>
                         <outlet property="sincronizarButton" destination="bbi-sy-001" id="out-pv-004"/>
                         <outlet property="tableView" destination="tbl-00-001" id="out-pv-005"/>
+                        <segue destination="PFV-00-001" kind="show" identifier="irAFormularioProducto" id="sg-fm-001"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="plv-fr-001" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1100" y="-2"/>
+        </scene>
+        <!--Formulario de producto-->
+        <scene sceneID="pfm-sc-001">
+            <objects>
+                <viewController id="PFV-00-001" customClass="ProductoFormViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="pfv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="scr-fm-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="fill" translatesAutoresizingMaskIntoConstraints="NO" id="stk-fm-001">
+                                        <rect key="frame" x="20" y="24" width="353" height="560"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nombre" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fn-001">
+                                                <rect key="frame" x="0.0" y="0.0" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fn-001" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="22" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fn-001"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Precio" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fp-001">
+                                                <rect key="frame" x="0.0" y="94" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fp-001" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="116" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fp-001"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stock" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fs-001">
+                                                <rect key="frame" x="0.0" y="188" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fs-001" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="210" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fs-001"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Categoria" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fc-001">
+                                                <rect key="frame" x="0.0" y="282" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-fc-001">
+                                                <rect key="frame" x="0.0" y="304" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fc-001"/>
+                                                </constraints>
+                                                <state key="normal" title="Sin categoria"/>
+                                                <connections>
+                                                    <action selector="categoriaTapped:" destination="PFV-00-001" eventType="touchUpInside" id="act-fc-001"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Proveedor" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fv-001">
+                                                <rect key="frame" x="0.0" y="376" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-fv-001">
+                                                <rect key="frame" x="0.0" y="398" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fv-001"/>
+                                                </constraints>
+                                                <state key="normal" title="Sin proveedor"/>
+                                                <connections>
+                                                    <action selector="proveedorTapped:" destination="PFV-00-001" eventType="touchUpInside" id="act-fv-001"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fe-001">
+                                                <rect key="frame" x="0.0" y="486" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fr-001">
+                                                <rect key="frame" x="0.0" y="494" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-fg-001">
+                                                <rect key="frame" x="0.0" y="510" width="353" height="46"/>
+                                                <state key="normal" title="Guardar"/>
+                                                <connections>
+                                                    <action selector="guardarTapped:" destination="PFV-00-001" eventType="touchUpInside" id="act-fg-001"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <viewLayoutGuide key="contentLayoutGuide" id="clg-fm-001"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="flg-fm-001"/>
+                                <constraints>
+                                    <constraint firstItem="stk-fm-001" firstAttribute="leading" secondItem="clg-fm-001" secondAttribute="leading" constant="20" id="cst-sc-001"/>
+                                    <constraint firstItem="clg-fm-001" firstAttribute="trailing" secondItem="stk-fm-001" secondAttribute="trailing" constant="20" id="cst-sc-002"/>
+                                    <constraint firstItem="stk-fm-001" firstAttribute="top" secondItem="clg-fm-001" secondAttribute="top" constant="24" id="cst-sc-003"/>
+                                    <constraint firstItem="clg-fm-001" firstAttribute="bottom" secondItem="stk-fm-001" secondAttribute="bottom" constant="32" id="cst-sc-004"/>
+                                    <constraint firstItem="stk-fm-001" firstAttribute="width" secondItem="flg-fm-001" secondAttribute="width" constant="-40" id="cst-sc-005"/>
+                                </constraints>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="pfv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="scr-fm-001" firstAttribute="leading" secondItem="pfv-sa-001" secondAttribute="leading" id="cst-fv-101"/>
+                            <constraint firstItem="pfv-sa-001" firstAttribute="trailing" secondItem="scr-fm-001" secondAttribute="trailing" id="cst-fv-102"/>
+                            <constraint firstItem="scr-fm-001" firstAttribute="top" secondItem="pfv-sa-001" secondAttribute="top" id="cst-fv-103"/>
+                            <constraint firstItem="pfv-sa-001" firstAttribute="bottom" secondItem="scr-fm-001" secondAttribute="bottom" id="cst-fv-104"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="nvi-fm-001"/>
+                    <connections>
+                        <outlet property="categoriaButton" destination="btn-fc-001" id="out-fm-001"/>
+                        <outlet property="categoriaCaptionLabel" destination="lbl-fc-001" id="out-fm-002"/>
+                        <outlet property="contentStack" destination="stk-fm-001" id="out-fm-003"/>
+                        <outlet property="errorLabel" destination="lbl-fr-001" id="out-fm-004"/>
+                        <outlet property="estadoLabel" destination="lbl-fe-001" id="out-fm-005"/>
+                        <outlet property="guardarButton" destination="btn-fg-001" id="out-fm-006"/>
+                        <outlet property="nombreCaptionLabel" destination="lbl-fn-001" id="out-fm-007"/>
+                        <outlet property="nombreField" destination="txt-fn-001" id="out-fm-008"/>
+                        <outlet property="precioCaptionLabel" destination="lbl-fp-001" id="out-fm-009"/>
+                        <outlet property="precioField" destination="txt-fp-001" id="out-fm-010"/>
+                        <outlet property="proveedorButton" destination="btn-fv-001" id="out-fm-011"/>
+                        <outlet property="proveedorCaptionLabel" destination="lbl-fv-001" id="out-fm-012"/>
+                        <outlet property="stockCaptionLabel" destination="lbl-fs-001" id="out-fm-013"/>
+                        <outlet property="stockField" destination="txt-fs-001" id="out-fm-014"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pfv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1500" y="-2"/>
         </scene>
     </scenes>
 </document>

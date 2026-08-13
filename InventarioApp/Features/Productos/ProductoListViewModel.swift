@@ -19,9 +19,18 @@ final class ProductoListViewModel {
         onCambio?()
     }
 
+    /// Marca el producto para eliminar. Sigue local hasta que el DELETE se
+    /// confirme contra el servidor, pero desaparece de la lista al instante.
+    func eliminar(en indice: Int) {
+        guard productos.indices.contains(indice) else { return }
+        ProductoService().marcarParaEliminar(productos[indice])
+        cargarLocales()
+    }
+
+    /// Sube pendientes, procesa bajas y baja del servidor, en ese orden.
     func sincronizar() {
         onLoadingChanged?(true)
-        SyncManager.shared.descargarDelServidor { [weak self] resultado in
+        SyncManager.shared.sincronizar { [weak self] resultado in
             guard let self else { return }
             self.onLoadingChanged?(false)
             switch resultado {

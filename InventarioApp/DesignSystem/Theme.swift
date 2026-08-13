@@ -192,6 +192,26 @@ extension UILabel {
     }
 }
 
+extension UIButton {
+    /// Unica forma confiable de ponerle titulo a un boton con `Configuration`.
+    ///
+    /// Dos trampas que esto evita, las dos silenciosas (compila, corre, y se ve
+    /// mal):
+    /// 1. Mutar `configuration?.title` por optional chaining no siempre se
+    ///    aplica; hay que rearmar la struct y asignarla entera.
+    /// 2. Si la `configuration` no define titulo, reaparece el *state title* que
+    ///    quedo en el Storyboard. Como ese texto suele ser parecido al real, el
+    ///    boton muestra un valor viejo que parece correcto — se limpia con
+    ///    `setTitle(nil, for: .normal)`.
+    func aplicarTitulo(_ texto: String, estilo: Theme.TextStyle, color: UIColor) {
+        var config = configuration ?? .plain()
+        config.title = texto
+        config.titleTextAttributesTransformer = estilo.transformadorTitulo(color: color)
+        configuration = config
+        setTitle(nil, for: .normal)
+    }
+}
+
 extension UIView {
     /// Borde de 1px + esquinas redondeadas. El DESIGN.md define la profundidad
     /// con capas tonales y bordes sutiles, no con sombras.

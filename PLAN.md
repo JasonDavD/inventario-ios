@@ -12,12 +12,26 @@ App iOS que consume la API REST de [`inventario-backend`](../inventario-backend)
 - `URLSession` + `dataTask(with:completionHandler:)`
 - Keychain para el JWT (sin cambios respecto al planteo original)
 
-### Division de trabajo — por que algunas cosas las armas vos en Xcode
+### Division de trabajo — Claude escribe todo, el usuario revisa en Xcode
 
-Storyboard, segues y `.xcdatamodeld` son formatos editados por GUI en Xcode. Este plan se escribe desde un entorno sin Xcode disponible, sin forma de abrir/validar esos archivos — escribirlos a mano a ciegas es un riesgo real de corrupcion. Como el curso los enseña asi (y son requisito), la division queda:
+**Actualizado (2026-08-12):** hay Xcode 26.3 instalado y funcionando en la Mac de trabajo, con runtime iOS 26.3 y simuladores disponibles. Esto invalida la premisa original de este plan ("entorno sin Xcode disponible"). El motivo para no escribir Storyboard ni `.xcdatamodeld` era no poder abrirlos ni validarlos; ahora se pueden escribir y **verificar compilando y corriendo en el simulador**, que es una validacion mas fuerte que la inspeccion visual.
 
-- **Claude escribe:** toda la logica Swift — `ViewController`s con los `@IBOutlet`/`@IBAction` ya declarados con nombres exactos, `ViewModel`s, `Service`s, Core Data, networking. Cada fase incluye el nombre exacto de cada outlet/accion/segue que el `ViewController` espera.
-- **El usuario arma en Xcode:** las escenas del Storyboard (arrastrar UI, poner `Custom Class`, conectar outlets/acciones con Ctrl+arrastrar), los segues entre escenas (con el `Identifier` exacto que el codigo espera), y las entidades/atributos/relaciones en el editor visual de `InventarioModel.xcdatamodeld` (esquema exacto mas abajo, con Codegen en "Class Definition" — asi Xcode genera las clases `NSManagedObject` solo, sin archivos `.swift` manuales para eso).
+- **Claude escribe:** toda la logica Swift, y tambien el `Main.storyboard` y el `InventarioModel.xcdatamodeld` (son XML). Compila con `xcodebuild`, corre en el simulador y verifica con screenshots antes de dar nada por hecho.
+- **El usuario:** abre los archivos en Xcode para ver como quedaron, ajusta lo que quiera del diseño visual, y corre la app por su cuenta cuando quiere validar algo end-to-end.
+
+Los nombres exactos de outlets/acciones/segues/entidades que cada fase especifica siguen siendo la referencia — no porque haya que conectarlos a mano, sino porque el codigo Swift y el XML del Storyboard tienen que coincidir, y ese desajuste sigue siendo la causa mas comun de crash.
+
+### Entorno verificado
+
+| Item | Valor |
+|---|---|
+| Xcode | 26.3 (build 17C529), en `/Applications/Xcode.app` |
+| Runtime | iOS 26.3 (23D8133) |
+| Simulador de trabajo | iPhone 16e |
+| Deployment target | iOS 18.0 |
+| Bundle id | `com.inventario.app` |
+
+`xcode-select` apuntaba a las Command Line Tools; se corrigio con `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`.
 
 ## Backend consumido
 
@@ -75,9 +89,10 @@ Cada entidad local de Core Data tiene:
 ```
 InventarioApp/
 ├── App/                       AppDelegate.swift, SceneDelegate.swift
-├── Main.storyboard             armado en Xcode por el usuario (todas las escenas + segues)
+├── Main.storyboard             todas las escenas + segues
+├── LaunchScreen.storyboard
 ├── CoreData/
-│   ├── InventarioModel.xcdatamodeld   armado en Xcode por el usuario (editor visual, esquema abajo)
+│   ├── InventarioModel.xcdatamodeld   esquema abajo
 │   └── PersistenceController.swift    carga el modelo desde el .xcdatamodeld + NSPersistentContainer
 ├── Networking/
 │   ├── APIClient.swift         URLSession + dataTask, completion handlers
@@ -91,40 +106,54 @@ InventarioApp/
 │   ├── Productos/              ProductoListViewController + Cell, ProductoDetailViewController, ProductoFormViewController (+ ViewModels)
 │   ├── Categorias/
 │   └── Proveedores/
-└── Resources/                   Assets.xcassets, Info.plist
+└── Resources/                   Assets.xcassets, Info.plist (excluido del copy de recursos)
 ```
 
 ## Convencion de checklist
 
-`[ ]` pendiente, `[~]` escrito pero no compilado/verificado, `[x]` verificado de verdad en Xcode. Esta sesion corre sin acceso a Mac — ningun `[x]` de "Funcional"/"Probado" hasta que el usuario lo corra.
+`[ ]` pendiente, `[~]` escrito pero no compilado/verificado, `[x]` compilado y corrido de verdad en el simulador.
 
-## Como ayudar una vez que hay Mac disponible
+Con Xcode disponible ya no hay excusa para dejar cosas en `[~]`: cada fase se cierra compilando y corriendo. Un `[~]` que sobrevive al final de una fase es deuda, no estado normal.
 
-Cuando el usuario tenga Xcode abierto y quiera conectar Storyboard/segues/`.xcdatamodeld`, el agente (esta sesion u otra) **no debe tirar la lista de pasos entera de una** — el agente no puede clickear Xcode, el usuario si. El modo que funciona:
+## Metodo de trabajo por fase
 
-1. Un paso concreto por vez ("Object Library (Cmd+Shift+L), arrastra un UITextField al canvas")
-2. Esperar confirmacion del usuario antes de seguir al siguiente paso
-3. Usar los nombres EXACTOS de outlets/actions/segues/entidades que ya estan en este archivo (Fase 1 tiene el esquema de Core Data completo; cada fase siguiente especifica los nombres de outlets/actions al lado del `ViewController` correspondiente)
-4. Si el usuario reporta un error o crash al correr, revisar primero que los nombres conectados en Xcode coincidan exactamente con los que el `@NSManaged`/`@IBOutlet`/`@IBAction` del codigo Swift espera — la causa mas comun de crash en este flujo es un typo entre lo que se conecto a mano en Xcode y lo que el codigo referencia
+1. Escribir el codigo Swift de la fase (y el XML de Storyboard / modelo si la fase lo toca)
+2. `xcodebuild ... build` — cero errores antes de seguir
+3. Instalar y lanzar en el simulador, y verificar con screenshot lo que la fase dice en "Funcional"
+4. Recien ahi marcar `[x]` y pasar a la siguiente fase
+
+Comando de build de referencia (desde la raiz del repo):
+
+```
+xcodebuild -project InventarioApp.xcodeproj -scheme InventarioApp \
+  -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16e' build
+```
+
+Si aparece un crash, lo primero a revisar sigue siendo que los nombres del Storyboard/modelo coincidan exactamente con los que el `@IBOutlet`/`@IBAction`/`@NSManaged` del codigo Swift espera.
 
 ---
 
 ## Fase 0 — Setup del proyecto
 
 - [x] Repo `inventario-ios` en GitHub (`https://github.com/JasonDavD/inventario-ios`), rama `main`
-- [ ] **Bloqueado hasta tener Mac.** File > New Project > iOS > App. Product Name: `InventarioApp`. Interface: **Storyboard**. Guardar DENTRO de esta carpeta del repo (ya tiene `.git`, no crear uno nuevo)
-- [ ] Estructura de carpetas del repo agregada como grupos en Xcode (file system synchronized groups, default en Xcode 16+)
-- [ ] **Funcional:** la app compila y corre en el simulador con la pantalla default del template
-- [ ] **Probado:** confirmado en Xcode por el usuario
+- [x] `InventarioApp.xcodeproj` en la raiz del repo (target UIKit + Storyboard, Swift 5, iOS 18.0). Escrito a mano, no con el wizard — el `.pbxproj` usa `objectVersion = 77`
+- [x] File system synchronized group apuntando a `InventarioApp/`: los archivos entran al target por estar en la carpeta, sin listarlos uno por uno en el `.pbxproj`
+- [x] `App/AppDelegate.swift`, `App/SceneDelegate.swift`, `Resources/Assets.xcassets`, `Main.storyboard` y `LaunchScreen.storyboard` base
+- [x] `Resources/Info.plist` explicito con el `UIApplicationSceneManifest` completo (ver nota abajo), excluido del copiado de recursos con `membershipExceptions` para que no se duplique en el bundle
+- [x] **Funcional:** `BUILD SUCCEEDED`; los 13 `.swift` compilan y ambos storyboards entran al bundle como `.storyboardc`
+- [x] **Probado:** corre en el simulador iPhone 16e, verificado por screenshot
+
+> **Nota — por que el `Info.plist` es explicito y no autogenerado.** Con `GENERATE_INFOPLIST_FILE = YES` + `INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES`, Xcode genera el manifest con `UISceneConfigurations` **vacio**. Sin esa entrada UIKit no asocia el `SceneDelegate` ni `Main.storyboard` a la escena: la app levanta con la ventana sin root view controller y se ve una pantalla negra, sin ningun error en el build ni en consola. La solucion es el `Info.plist` a mano con `UISceneDelegateClassName = $(PRODUCT_MODULE_NAME).SceneDelegate` y `UISceneStoryboardFile = Main`.
 
 ## Fase 1 — Stack de Core Data
 
-- [~] `CoreData/PersistenceController.swift`: carga `InventarioModel` desde el `.xcdatamodeld` (no arma el modelo en codigo), `NSPersistentContainer`, `saveContext()`
-- [ ] **Bloqueado hasta tener Mac — armar en el editor visual** (`InventarioModel.xcdatamodeld`, File > New > Core Data Model si el wizard no lo creo solo): las 4 entidades del esquema de abajo, con Codegen = "Class Definition" en cada una (asi Xcode genera las clases `NSManagedObject` solo, no hace falta escribirlas a mano)
+- [~] `CoreData/PersistenceController.swift`: carga `InventarioModel` desde el `.xcdatamodeld` (no arma el modelo en codigo), `NSPersistentContainer`, `saveContext()` — compila, pero todavia no se ejecuto porque el modelo no existe
+- [ ] `InventarioModel.xcdatamodeld` con las 4 entidades del esquema de abajo, Codegen = "Class Definition" en cada una (asi Xcode genera las clases `NSManagedObject` solo, no hace falta escribirlas a mano)
+- [ ] Reenganchar `PersistenceController.shared.saveContext()` en `SceneDelegate.sceneDidEnterBackground` — se dejo comentado en Fase 0 porque tocar `shared` sin modelo crashea
 - [ ] **Funcional:** insertar y leer un registro de prueba (`NSFetchRequest`) confirma que el stack levanta sin crashear
-- [ ] **Probado:** pendiente de Mac
+- [ ] **Probado:** corrido en el simulador
 
-### Esquema de Core Data (armar en el editor visual)
+### Esquema de Core Data
 
 Cada entidad lleva estos 4 atributos de control ademas de los propios — mismo patron `estadoSync`/`apiId` que ya usa `inventario-android`:
 
@@ -151,7 +180,7 @@ Cada entidad lleva estos 4 atributos de control ademas de los propios — mismo 
 - [~] `Auth/SessionManager.swift` reescrito sin Combine/`ObservableObject` — singleton simple con propiedades planas
 - [~] `Services/AuthService.swift` (login con completion handler)
 - [~] `Features/Auth/LoginViewController.swift` + `LoginViewModel.swift` (closures, sin Combine)
-- [ ] **Bloqueado hasta tener Mac:** armar la escena de Login en `Main.storyboard`, `Custom Class` = `LoginViewController`, marcarla Initial View Controller. Elementos y conexiones EXACTAS que el codigo espera:
+- [ ] Escena de Login en `Main.storyboard`, `Custom Class` = `LoginViewController`, marcarla Initial View Controller (reemplaza la escena placeholder de Fase 0). Elementos y conexiones EXACTAS que el codigo espera:
 
   | Elemento UI | Tipo | Conectar como |
   |---|---|---|
@@ -209,3 +238,5 @@ Cada entidad lleva estos 4 atributos de control ademas de los propios — mismo 
 
 - El plan original (commits `63d4ef3`..`e997f92`) usaba SwiftUI + async/await + sin persistencia local. Se descarto por completo al confirmarse que la rubrica del curso exige UIKit + Core Data + `dataTask`, con el mismo patron offline-first que ya tiene `inventario-android`.
 - El primer intento de UIKit (commits `bf4b0cb`, `7b12bd0`) evitaba Storyboard y `.xcdatamodeld` armando todo por codigo (UI programatica, `NSManagedObjectModel` a mano), por no poder validar formatos de GUI de Xcode sin acceso a Mac. Se descarto al confirmarse que el curso enseña especificamente Storyboard + `@IBOutlet` + segues + el editor visual de Core Data, y que hay que trabajar igual. Quedo la division de trabajo de la seccion "Stack": Claude escribe la logica Swift, el usuario arma en Xcode lo que es puramente visual siguiendo instrucciones exactas.
+- **2026-08-12 — cae la premisa de "sin Mac".** Se verifico que la Mac de trabajo tiene Xcode 26.3 instalado y funcional (solo faltaba apuntar `xcode-select`, que seguia en las Command Line Tools). Con eso se puede compilar, correr en simulador y verificar por screenshot desde la propia sesion. Decision del usuario: Claude escribe tambien el Storyboard y el `.xcdatamodeld` (son XML, y ahora se validan compilando y corriendo), y el usuario los revisa/ajusta en Xcode. Se reescribieron las secciones "Division de trabajo", "Convencion de checklist" y "Metodo de trabajo por fase" en consecuencia. Fase 0 quedo cerrada el mismo dia.
+- **Ajuste de alcance entre Fase 3 y Fase 4 (pendiente de aplicar).** Fase 3 como esta escrita no es demostrable: pide una lista que lee de Core Data como fuente de verdad, pero nada llena Core Data hasta Fase 4. La propuesta es mover el paso 3 del `SyncManager` (GET del servidor → upsert local por `apiId`) a Fase 3, dejando Fase 4 con solo subida de pendientes y bajas. Asi Fase 3 cierra con algo verificable de punta a punta: bajar productos, cortar la red, y ver que la lista sigue.

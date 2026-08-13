@@ -47,7 +47,9 @@ final class APIClient {
     }
 
     private func attachAuthIfNeeded(_ request: inout URLRequest, authenticated: Bool) {
-        guard authenticated, let token = KeychainService.shared.readToken() else { return }
+        // Se lee de SessionManager y no del Keychain directo: con "mantener
+        // sesion iniciada" desactivado el token vive solo en memoria.
+        guard authenticated, let token = SessionManager.shared.token else { return }
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
     }
 

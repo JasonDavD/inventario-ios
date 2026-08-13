@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -17,78 +16,222 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="fill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="stk-lg-001">
-                                <rect key="frame" x="32" y="278" width="329" height="296"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="crd-00-001">
+                                <rect key="frame" x="20" y="150" width="353" height="552"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ferreteria Zamora" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ti-001">
-                                        <rect key="frame" x="0.0" y="0.0" width="329" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="28"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Inventario" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-su-001">
-                                        <rect key="frame" x="0.0" y="50" width="329" height="20"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" systemColor="secondaryLabelColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Usuario" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-us-001">
-                                        <rect key="frame" x="0.0" y="86" width="329" height="44"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="44" id="cst-us-001"/>
-                                        </constraints>
-                                        <nil key="textColor"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="highlightedColor"/>
-                                        <textInputTraits key="textInputTraits" autocapitalizationType="none" autocorrectionType="no" returnKeyType="next"/>
-                                    </textField>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Contrasena" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-pw-001">
-                                        <rect key="frame" x="0.0" y="146" width="329" height="44"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="44" id="cst-pw-001"/>
-                                        </constraints>
-                                        <nil key="textColor"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="highlightedColor"/>
-                                        <textInputTraits key="textInputTraits" autocapitalizationType="none" autocorrectionType="no" returnKeyType="go" secureTextEntry="YES"/>
-                                    </textField>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-lg-001">
-                                        <rect key="frame" x="0.0" y="206" width="329" height="44"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="44" id="cst-bt-001"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
-                                        <state key="normal" title="Ingresar"/>
-                                        <connections>
-                                            <action selector="loginButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="act-lg-001"/>
-                                        </connections>
-                                    </button>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-in-001">
-                                        <rect key="frame" x="154.5" y="266" width="20" height="20"/>
-                                    </activityIndicatorView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-er-001">
-                                        <rect key="frame" x="0.0" y="286" width="329" height="0.0"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <color key="textColor" systemColor="systemRedColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="fill" translatesAutoresizingMaskIntoConstraints="NO" id="stk-00-001">
+                                        <rect key="frame" x="24" y="24" width="305" height="504"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="irw-00-001">
+                                                <rect key="frame" x="0.0" y="0.0" width="305" height="64"/>
+                                                <subviews>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="icc-00-001">
+                                                        <rect key="frame" x="120.5" y="0.0" width="64" height="64"/>
+                                                        <subviews>
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ici-00-001">
+                                                                <rect key="frame" x="16" y="16" width="32" height="32"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="32" id="cst-ic-001"/>
+                                                                    <constraint firstAttribute="height" constant="32" id="cst-ic-002"/>
+                                                                </constraints>
+                                                            </imageView>
+                                                        </subviews>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="64" id="cst-ic-003"/>
+                                                            <constraint firstAttribute="height" constant="64" id="cst-ic-004"/>
+                                                            <constraint firstItem="ici-00-001" firstAttribute="centerX" secondItem="icc-00-001" secondAttribute="centerX" id="cst-ic-005"/>
+                                                            <constraint firstItem="ici-00-001" firstAttribute="centerY" secondItem="icc-00-001" secondAttribute="centerY" id="cst-ic-006"/>
+                                                        </constraints>
+                                                    </view>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="icc-00-001" firstAttribute="centerX" secondItem="irw-00-001" secondAttribute="centerX" id="cst-ir-001"/>
+                                                    <constraint firstItem="icc-00-001" firstAttribute="top" secondItem="irw-00-001" secondAttribute="top" id="cst-ir-002"/>
+                                                    <constraint firstAttribute="bottom" secondItem="icc-00-001" secondAttribute="bottom" id="cst-ir-003"/>
+                                                </constraints>
+                                            </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ferreteria Zamora" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ti-001">
+                                                <rect key="frame" x="0.0" y="88" width="305" height="36"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="28"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gestion de Inventario" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-su-001">
+                                                <rect key="frame" x="0.0" y="128" width="305" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Usuario" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-uc-001">
+                                                <rect key="frame" x="0.0" y="188" width="305" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-us-001" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="210" width="305" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-us-001"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="none" autocorrectionType="no" returnKeyType="next"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Contrasena" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-pc-001">
+                                                <rect key="frame" x="0.0" y="282" width="305" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pwc-00-001">
+                                                <rect key="frame" x="0.0" y="304" width="305" height="48"/>
+                                                <subviews>
+                                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-pw-001" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="0.0" width="305" height="48"/>
+                                                        <nil key="textColor"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                        <nil key="highlightedColor"/>
+                                                        <textInputTraits key="textInputTraits" autocapitalizationType="none" autocorrectionType="no" returnKeyType="go" secureTextEntry="YES"/>
+                                                    </textField>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-oj-001">
+                                                        <rect key="frame" x="269" y="12" width="24" height="24"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="24" id="cst-oj-001"/>
+                                                            <constraint firstAttribute="height" constant="24" id="cst-oj-002"/>
+                                                        </constraints>
+                                                        <connections>
+                                                            <action selector="passwordToggleTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="act-oj-001"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-pw-001"/>
+                                                    <constraint firstItem="txt-pw-001" firstAttribute="leading" secondItem="pwc-00-001" secondAttribute="leading" id="cst-pw-002"/>
+                                                    <constraint firstAttribute="trailing" secondItem="txt-pw-001" secondAttribute="trailing" id="cst-pw-003"/>
+                                                    <constraint firstItem="txt-pw-001" firstAttribute="top" secondItem="pwc-00-001" secondAttribute="top" id="cst-pw-004"/>
+                                                    <constraint firstAttribute="bottom" secondItem="txt-pw-001" secondAttribute="bottom" id="cst-pw-005"/>
+                                                    <constraint firstAttribute="trailing" secondItem="btn-oj-001" secondAttribute="trailing" constant="12" id="cst-pw-006"/>
+                                                    <constraint firstItem="btn-oj-001" firstAttribute="centerY" secondItem="pwc-00-001" secondAttribute="centerY" id="cst-pw-007"/>
+                                                </constraints>
+                                            </view>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-rm-001">
+                                                <rect key="frame" x="0.0" y="376" width="305" height="20"/>
+                                                <state key="normal" title="Mantener sesion iniciada"/>
+                                                <connections>
+                                                    <action selector="rememberTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="act-rm-001"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-lg-001">
+                                                <rect key="frame" x="0.0" y="412" width="305" height="46"/>
+                                                <state key="normal" title="Acceder"/>
+                                                <connections>
+                                                    <action selector="loginButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="act-lg-001"/>
+                                                </connections>
+                                            </button>
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-in-001">
+                                                <rect key="frame" x="0.0" y="474" width="305" height="20"/>
+                                            </activityIndicatorView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-er-001">
+                                                <rect key="frame" x="0.0" y="502" width="305" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="div-00-001">
+                                                <rect key="frame" x="0.0" y="542" width="305" height="1"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="1" id="cst-dv-001"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lrw-00-001">
+                                                <rect key="frame" x="0.0" y="567" width="305" height="16"/>
+                                                <subviews>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="stk-lk-001">
+                                                        <rect key="frame" x="60" y="0.0" width="185" height="16"/>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-rc-001">
+                                                                <rect key="frame" x="0.0" y="0.0" width="85" height="16"/>
+                                                                <state key="normal" title="Recuperar acceso"/>
+                                                                <connections>
+                                                                    <action selector="recuperarTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="act-rc-001"/>
+                                                                </connections>
+                                                            </button>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sep-00-001">
+                                                                <rect key="frame" x="101" y="6" width="4" height="4"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="4" id="cst-sp-001"/>
+                                                                    <constraint firstAttribute="height" constant="4" id="cst-sp-002"/>
+                                                                </constraints>
+                                                            </view>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-sp-001">
+                                                                <rect key="frame" x="121" y="0.0" width="64" height="16"/>
+                                                                <state key="normal" title="Soporte tecnico"/>
+                                                                <connections>
+                                                                    <action selector="soporteTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="act-sp-001"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                    </stackView>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="stk-lk-001" firstAttribute="centerX" secondItem="lrw-00-001" secondAttribute="centerX" id="cst-lr-001"/>
+                                                    <constraint firstItem="stk-lk-001" firstAttribute="top" secondItem="lrw-00-001" secondAttribute="top" id="cst-lr-002"/>
+                                                    <constraint firstAttribute="bottom" secondItem="stk-lk-001" secondAttribute="bottom" id="cst-lr-003"/>
+                                                    <constraint firstItem="stk-lk-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lrw-00-001" secondAttribute="leading" id="cst-lr-004"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                    </stackView>
                                 </subviews>
-                            </stackView>
+                                <constraints>
+                                    <constraint firstItem="stk-00-001" firstAttribute="leading" secondItem="crd-00-001" secondAttribute="leading" constant="24" id="cst-cd-001"/>
+                                    <constraint firstAttribute="trailing" secondItem="stk-00-001" secondAttribute="trailing" constant="24" id="cst-cd-002"/>
+                                    <constraint firstItem="stk-00-001" firstAttribute="top" secondItem="crd-00-001" secondAttribute="top" constant="24" id="cst-cd-003"/>
+                                    <constraint firstAttribute="bottom" secondItem="stk-00-001" secondAttribute="bottom" constant="24" id="cst-cd-004"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ft-001">
+                                <rect key="frame" x="20" y="800" width="353" height="16"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="stk-lg-001" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="cst-sv-001"/>
-                            <constraint firstItem="stk-lg-001" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="32" id="cst-sv-002"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="stk-lg-001" secondAttribute="trailing" constant="32" id="cst-sv-003"/>
+                            <constraint firstItem="crd-00-001" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="cst-rt-001"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="crd-00-001" secondAttribute="trailing" constant="20" id="cst-rt-002"/>
+                            <constraint firstItem="crd-00-001" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="cst-rt-003"/>
+                            <constraint firstItem="crd-00-001" firstAttribute="top" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="cst-rt-004"/>
+                            <constraint firstItem="lbl-ft-001" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="cst-rt-005"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="lbl-ft-001" secondAttribute="trailing" constant="20" id="cst-rt-006"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="lbl-ft-001" secondAttribute="bottom" constant="16" id="cst-rt-007"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="activityIndicator" destination="act-in-001" id="out-lg-005"/>
-                        <outlet property="errorLabel" destination="lbl-er-001" id="out-lg-004"/>
-                        <outlet property="loginButton" destination="btn-lg-001" id="out-lg-003"/>
-                        <outlet property="passwordField" destination="txt-pw-001" id="out-lg-002"/>
-                        <outlet property="usernameField" destination="txt-us-001" id="out-lg-001"/>
+                        <outlet property="activityIndicator" destination="act-in-001" id="out-00-001"/>
+                        <outlet property="cardCenterYConstraint" destination="cst-rt-003" id="out-00-002"/>
+                        <outlet property="cardView" destination="crd-00-001" id="out-00-003"/>
+                        <outlet property="contentStack" destination="stk-00-001" id="out-00-004"/>
+                        <outlet property="dividerView" destination="div-00-001" id="out-00-005"/>
+                        <outlet property="errorLabel" destination="lbl-er-001" id="out-00-006"/>
+                        <outlet property="footerLabel" destination="lbl-ft-001" id="out-00-007"/>
+                        <outlet property="iconContainerView" destination="icc-00-001" id="out-00-008"/>
+                        <outlet property="iconImageView" destination="ici-00-001" id="out-00-009"/>
+                        <outlet property="loginButton" destination="btn-lg-001" id="out-00-010"/>
+                        <outlet property="passwordCaptionLabel" destination="lbl-pc-001" id="out-00-011"/>
+                        <outlet property="passwordContainerView" destination="pwc-00-001" id="out-00-012"/>
+                        <outlet property="passwordField" destination="txt-pw-001" id="out-00-013"/>
+                        <outlet property="passwordToggleButton" destination="btn-oj-001" id="out-00-014"/>
+                        <outlet property="recuperarButton" destination="btn-rc-001" id="out-00-015"/>
+                        <outlet property="rememberButton" destination="btn-rm-001" id="out-00-016"/>
+                        <outlet property="separadorPuntoView" destination="sep-00-001" id="out-00-017"/>
+                        <outlet property="soporteButton" destination="btn-sp-001" id="out-00-018"/>
+                        <outlet property="subtitleLabel" destination="lbl-su-001" id="out-00-019"/>
+                        <outlet property="titleLabel" destination="lbl-ti-001" id="out-00-020"/>
+                        <outlet property="usernameCaptionLabel" destination="lbl-uc-001" id="out-00-021"/>
+                        <outlet property="usernameField" destination="txt-us-001" id="out-00-022"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -96,15 +239,4 @@
             <point key="canvasLocation" x="132" y="-2"/>
         </scene>
     </scenes>
-    <resources>
-        <systemColor name="secondaryLabelColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.26274509803921569" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-    </resources>
 </document>

@@ -21,6 +21,20 @@ App iOS que consume la API REST de [`inventario-backend`](../inventario-backend)
 
 Los nombres exactos de outlets/acciones/segues/entidades que cada fase especifica siguen siendo la referencia — no porque haya que conectarlos a mano, sino porque el codigo Swift y el XML del Storyboard tienen que coincidir, y ese desajuste sigue siendo la causa mas comun de crash.
 
+### Sistema de diseño
+
+Las pantallas siguen [`DESIGN.md`](DESIGN.md) ("Precision Minimalist"), que esta en la raiz del repo y es la fuente de verdad. Traducido a codigo en `DesignSystem/Theme.swift`: si cambia el DESIGN.md se toca ese archivo, no cada pantalla.
+
+- **Tipografia:** el documento pide Inter; se usa la fuente del sistema (SF Pro) para no bundlear archivos de fuente. Se respetan tamaño, peso, interlineado y tracking de cada rol, que es lo que define la jerarquia. El `letterSpacing` viene en `em` y se convierte a puntos (`kern = em * size`).
+- **Iconos:** los Material Symbols del mockup se mapean a SF Symbols, que ya vienen en iOS (`handyman` → `wrench.and.screwdriver`, `visibility_off` → `eye.slash`, `arrow_forward` → `arrow.right`).
+- **Modo oscuro:** la paleta es solo modo claro, asi que la app fuerza `UIUserInterfaceStyle = Light` en el `Info.plist`. Sin eso los colores fijos del `Theme` conviven con los del sistema y la pantalla queda ilegible.
+- **Reparto storyboard/codigo:** el storyboard tiene la estructura (jerarquia de vistas, constraints, outlets); el estilado va en `viewDidLoad` desde el `Theme`. Tracking tipografico, bordes de 1px, radios y estados de foco no se pueden expresar en el editor visual.
+
+#### Dos trampas de UIKit que ya costaron tiempo
+
+1. **`UIButton.Configuration` pisa la fuente del titulo.** Setear `config.attributedTitle` con una fuente NO alcanza: UIKit reaplica la suya y el titulo sale en el tamaño por defecto. El unico punto que respeta es `config.titleTextAttributesTransformer`. Sintoma: todo compila y corre, pero los botones se ven con la tipografia equivocada.
+2. **Forzar `lineHeight` desalinea el texto verticalmente.** Al fijar `minimumLineHeight`/`maximumLineHeight` en el `NSParagraphStyle`, el texto queda pegado al borde superior; se compensa con `baselineOffset`.
+
 ### Entorno verificado
 
 | Item | Valor |
@@ -196,8 +210,20 @@ Cada entidad lleva estos 4 atributos de control ademas de los propios — mismo 
 
 - [x] Fix: `APIClient` mapeaba **todo** 401 a `.unauthorized` ("Sesion expirada"). En el login un 401 es "credenciales malas", no sesion vencida. Ahora solo se mapea a `.unauthorized` si la request iba autenticada; en el login cae en `.server` y se muestra el `mensaje` del backend
 - [x] **Funcional (verificado en simulador):** validacion local con campos vacios, indicador de carga activo con el boton deshabilitado durante la request, error de red visible al timeout, y credenciales invalidas muestran "Usuario o password incorrectos" — el mensaje real que manda el backend
-- [ ] **Funcional (pendiente):** login exitoso contra produccion con credenciales reales, y token efectivamente guardado en Keychain. Lo corre el usuario: el agente no ingresa credenciales
+- [x] **Funcional:** login exitoso contra produccion con credenciales reales — confirmado por el usuario corriendo la app desde Xcode
 - [x] **Probado:** corrido en el simulador iPhone 16e, verificado por screenshot en cada paso
+
+### Rediseño del Login (posterior al cierre de Fase 2)
+
+Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, icono en circulo tonal, labels arriba de cada input, boton charcoal con flecha, divisor y links al pie.
+
+- [x] `DesignSystem/Theme.swift` (colores, radios, espaciado, roles tipograficos) y `DesignSystem/PaddedTextField.swift` (insets, que `UITextField` no expone)
+- [x] Ojito para ver/ocultar la contrasena (`eye` / `eye.slash`)
+- [x] Check "Mantener sesion iniciada" **con comportamiento real**: tildado guarda el token en Keychain; destildado lo deja solo en memoria y se pierde al cerrar la app. Para eso `APIClient` pasa a leer el token de `SessionManager` y no del Keychain directo
+- [x] Links "Recuperar acceso" / "Soporte tecnico": el backend no tiene esos endpoints, asi que abren un alert que lo dice en vez de simular que funcionan
+- [x] Borde de foco en `charcoal-deep` al editar un campo, como pide el DESIGN.md
+- [x] **Probado:** verificado por screenshot — tipografia por rol, ojito, check y alerts
+- [ ] **Sin verificar:** el ajuste de la card cuando sube el teclado. El simulador usa el teclado fisico del Mac y el software no aparece, asi que no se pudo probar. Se prueba en dispositivo o desactivando el teclado fisico (I/O > Keyboard > Connect Hardware Keyboard)
 
 > **Arranque en frio de Render, medido.** Con el servicio dormido, `POST /api/auth/login` no respondio en 90s y la app mostro "No se pudo conectar al servidor" — el timeout de 90s no alcanza. Ya despierto, la misma request responde en ~1.6s. `GET /` despierta el servicio y contesta 302 rapido, asi que sirve como ping de warm-up. A tener en cuenta para el `SyncManager` de Fase 4: conviene despertar el backend antes de sincronizar, o el primer sync del dia va a fallar por timeout.
 

@@ -229,12 +229,24 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 
 ## Fase 3 — Listado de productos offline-first
 
-- [ ] `Models/ProductoDTO.swift` + equivalentes de Categoria/Proveedor/Imagen (DTOs Codable del JSON de la API)
-- [ ] `Services/ProductoService.swift`: lee de Core Data (fuente de verdad local), no directo de la red
-- [ ] `Features/Productos/ProductoListViewController.swift` + `ProductoTableViewCell.swift` (`UITableViewDataSource`/`Delegate`, celda con `Identifier`/`Style`/`Class` programaticos)
-- [ ] Boton "Sincronizar" que dispara `SyncManager` (placeholder en esta fase, logica completa en Fase 4)
-- [ ] **Funcional:** ver productos guardados localmente en una `UITableView`, funciona sin conexion (si hay datos previos)
-- [ ] **Probado:** pendiente de Mac
+- [x] `Models/Inventario/ProductoDTO.swift` con los DTOs Codable de Producto/Categoria/Proveedor/Imagen
+- [x] `Networking/FechaAPI.swift`: parseo propio de `fechaRegistro` (ver nota abajo)
+- [x] `Services/ProductoService.swift`: lee de Core Data (fuente de verdad local), no directo de la red
+- [x] `Sync/SyncManager.swift` con el **paso 3** (GET → upsert local por `apiId`), movido aca desde Fase 4
+- [x] `Features/Productos/ProductoListViewController.swift` + `ProductoTableViewCell.swift` (`UITableViewDataSource`/`Delegate`, celda prototipo en el Storyboard con `Identifier` = `ProductoCell`)
+- [x] Boton "Sincronizar" en la barra + pull to refresh, estado vacio y alert de error
+- [x] Segue `irAProductos` desde el Login a un `UINavigationController`, reemplazando el alert placeholder
+- [x] Auto-login al arrancar si hay sesion guardada (ver nota abajo)
+- [x] **Funcional:** productos bajados del servidor y guardados en Core Data; **verificado sin servidor alcanzable** — la app arranca, entra y muestra la lista local, y Sincronizar falla con mensaje sin vaciar los datos
+- [x] **Probado:** verificado por screenshot y leyendo el SQLite del simulador con `sqlite3`
+
+> **Ajuste de alcance aplicado.** El paso 3 del `SyncManager` (bajada + upsert) se movio de Fase 4 a Fase 3: sin el nada llena Core Data y el listado no se puede demostrar. Fase 4 queda con la subida de pendientes y las bajas. **El orden importa:** cuando existan esos dos pasos tienen que correr ANTES de la bajada, o se pisan los cambios locales sin subir. Mientras tanto el upsert saltea toda fila con `estadoSync == 0` o `pendienteEliminar == true`.
+
+> **`fechaRegistro` necesita parseo propio.** Viene como `2026-08-12T10:15:30`: ISO 8601 **sin zona horaria**, y `JSONDecoder.dateDecodingStrategy = .iso8601` lo rechaza justamente por eso. Una sola fecha que no parsee tumba el listado entero, asi que `FechaAPI` prueba tres formatos. Verificado contra datos reales: el registro quedo en el store con `2026-08-13 01:41:53`.
+
+> **El auto-login no estaba y hacia inutil el check "Mantener sesion iniciada".** El token se guardaba en Keychain pero la app pedia login igual en cada arranque. Ahora `LoginViewController.viewDidAppear` dispara el segue si `SessionManager.isAuthenticated`, una sola vez por arranque.
+
+> **Como se probo el modo offline.** Se apunto `Endpoint.baseURL` a `https://servidor-inalcanzable.invalid` (el TLD `.invalid` no resuelve nunca, por RFC 2606), se compilo y se corrio. Sirve para repetir la prueba sin tocar la red del Mac ni el simulador. **Acordarse de revertir la URL despues.**
 
 ## Fase 4 — CRUD local + sincronizacion bidireccional
 

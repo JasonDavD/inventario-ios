@@ -39,6 +39,7 @@ final class LoginViewController: UIViewController {
 
     private let viewModel = LoginViewModel()
     private var recordarSesion = true
+    private var yaEvaluoSesionGuardada = false
 
     // MARK: - Ciclo de vida
 
@@ -216,7 +217,7 @@ final class LoginViewController: UIViewController {
 
     private func bindViewModel() {
         viewModel.onLoginSuccess = { [weak self] in
-            self?.showLoginSuccessPlaceholder()
+            self?.performSegue(withIdentifier: "irAProductos", sender: nil)
         }
         viewModel.onLoginError = { [weak self] message in
             self?.mostrarError(message)
@@ -346,15 +347,29 @@ final class LoginViewController: UIViewController {
         view.endEditing(true)
     }
 
-    // Placeholder temporal — Fase 3 lo reemplaza por un segue real a ProductoListViewController.
-    private func showLoginSuccessPlaceholder() {
-        let alert = UIAlertController(
-            title: "Sesion iniciada",
-            message: "Bienvenido, \(SessionManager.shared.username ?? "")",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+    /// Deja los campos limpios para el proximo login: al volver de cerrar sesion
+    /// la pantalla no puede seguir mostrando la contrasena del usuario anterior.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard !SessionManager.shared.isAuthenticated else { return }
+        usernameField.text = nil
+        passwordField.text = nil
+        mostrarError(nil)
+    }
+
+    /// Con "Mantener sesion iniciada" tildado el token queda en el Keychain, asi
+    /// que al abrir la app se entra derecho. Sin esto la opcion no serviria de
+    /// nada: guardaba el token pero igual pedia login en cada arranque.
+    ///
+    /// Solo se evalua una vez, en el arranque. Al volver aca despues de cerrar
+    /// sesion `isAuthenticated` ya es `false`, pero la bandera evita cualquier
+    /// riesgo de rebote entre las dos pantallas.
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard !yaEvaluoSesionGuardada else { return }
+        yaEvaluoSesionGuardada = true
+        guard SessionManager.shared.isAuthenticated else { return }
+        performSegue(withIdentifier: "irAProductos", sender: nil)
     }
 }
 

@@ -4,8 +4,23 @@ final class APIClient {
     static let shared = APIClient()
 
     private let session: URLSession
-    private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
+
+    private let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom { decodificador in
+            let contenedor = try decodificador.singleValueContainer()
+            let texto = try contenedor.decode(String.self)
+            guard let fecha = FechaAPI.parsear(texto) else {
+                throw DecodingError.dataCorruptedError(
+                    in: contenedor,
+                    debugDescription: "Fecha con formato inesperado: \(texto)"
+                )
+            }
+            return fecha
+        }
+        return decoder
+    }()
 
     private init() {
         // Render (plan gratuito) "duerme" el servicio tras inactividad: la primera

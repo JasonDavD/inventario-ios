@@ -21,7 +21,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		1A0000000000000000000005 /* InventarioApp */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (1A0000000000000000000010 /* Exceptions for "InventarioApp" folder in "InventarioApp" target */, ); path = InventarioApp; sourceTree = "<group>"; };
+		1A0000000000000000000005 /* InventarioApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1A0000000000000000000010 /* Exceptions for "InventarioApp" folder in "InventarioApp" target */,
+			);
+			path = InventarioApp;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */

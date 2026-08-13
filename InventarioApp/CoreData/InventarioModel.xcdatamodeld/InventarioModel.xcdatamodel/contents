@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23090" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="NO" userDefinedModelVersionIdentifier="">
+    <entity name="CategoriaEntity" representedClassName="CategoriaEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="apiId" optional="YES" attributeType="Integer 64" usesScalarValueType="NO"/>
+        <attribute name="descripcion" optional="YES" attributeType="String"/>
+        <attribute name="estadoSync" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="localId" attributeType="String"/>
+        <attribute name="nombre" attributeType="String"/>
+        <attribute name="pendienteEliminar" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <relationship name="productos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ProductoEntity" inverseName="categoria" inverseEntity="ProductoEntity"/>
+    </entity>
+    <entity name="ProductoEntity" representedClassName="ProductoEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="apiId" optional="YES" attributeType="Integer 64" usesScalarValueType="NO"/>
+        <attribute name="estadoSync" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="fechaRegistro" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="localId" attributeType="String"/>
+        <attribute name="nombre" attributeType="String"/>
+        <attribute name="pendienteEliminar" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="precio" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="stock" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="categoria" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CategoriaEntity" inverseName="productos" inverseEntity="CategoriaEntity"/>
+        <relationship name="imagenes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="ProductoImagenEntity" inverseName="producto" inverseEntity="ProductoImagenEntity"/>
+        <relationship name="proveedor" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ProveedorEntity" inverseName="productos" inverseEntity="ProveedorEntity"/>
+    </entity>
+    <entity name="ProductoImagenEntity" representedClassName="ProductoImagenEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="apiId" optional="YES" attributeType="Integer 64" usesScalarValueType="NO"/>
+        <attribute name="estadoSync" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="localId" attributeType="String"/>
+        <attribute name="orden" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="pendienteEliminar" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="publicId" attributeType="String"/>
+        <attribute name="url" attributeType="String"/>
+        <relationship name="producto" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ProductoEntity" inverseName="imagenes" inverseEntity="ProductoEntity"/>
+    </entity>
+    <entity name="ProveedorEntity" representedClassName="ProveedorEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="apiId" optional="YES" attributeType="Integer 64" usesScalarValueType="NO"/>
+        <attribute name="direccion" optional="YES" attributeType="String"/>
+        <attribute name="estadoSync" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="localId" attributeType="String"/>
+        <attribute name="logoPublicId" optional="YES" attributeType="String"/>
+        <attribute name="logoUrl" optional="YES" attributeType="String"/>
+        <attribute name="nombre" attributeType="String"/>
+        <attribute name="pendienteEliminar" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="telefono" optional="YES" attributeType="String"/>
+        <relationship name="productos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ProductoEntity" inverseName="proveedor" inverseEntity="ProductoEntity"/>
+    </entity>
+</model>

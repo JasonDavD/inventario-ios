@@ -9,22 +9,22 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Smoke Test View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="SmokeTestViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="InventarioApp" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pl1-a1-h0d">
-                                <rect key="frame" x="129" y="399" width="135" height="41"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="34"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fase 1 — Core Data" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pl1-a1-h0d">
+                                <rect key="frame" x="93" y="180" width="207" height="34"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="28"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fase 0 - proyecto base" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pl2-a2-h0d">
-                                <rect key="frame" x="113" y="448" width="167" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Corriendo prueba..." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pl2-a2-h0d">
+                                <rect key="frame" x="24" y="238" width="345" height="20"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" systemColor="secondaryLabelColor"/>
                                 <nil key="highlightedColor"/>
@@ -34,11 +34,15 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="pl1-a1-h0d" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="c01-aa-001"/>
-                            <constraint firstItem="pl1-a1-h0d" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="c02-aa-002"/>
-                            <constraint firstItem="pl2-a2-h0d" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="c03-aa-003"/>
-                            <constraint firstItem="pl2-a2-h0d" firstAttribute="top" secondItem="pl1-a1-h0d" secondAttribute="bottom" constant="8" id="c04-aa-004"/>
+                            <constraint firstItem="pl1-a1-h0d" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="120" id="c02-aa-002"/>
+                            <constraint firstItem="pl2-a2-h0d" firstAttribute="top" secondItem="pl1-a1-h0d" secondAttribute="bottom" constant="24" id="c03-aa-003"/>
+                            <constraint firstItem="pl2-a2-h0d" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="24" id="c04-aa-004"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="pl2-a2-h0d" secondAttribute="trailing" constant="24" id="c05-aa-005"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="resultLabel" destination="pl2-a2-h0d" id="out-aa-001"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

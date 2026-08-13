@@ -25,8 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Fase 1 engancha aca PersistenceController.shared.saveContext(), una vez
-        // que exista InventarioModel.xcdatamodeld (antes de eso, tocar `shared`
-        // crashea al no encontrar el modelo).
+        // Persistir cambios pendientes al mandar la app a background.
+        PersistenceController.shared.saveContext()
     }
 }

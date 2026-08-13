@@ -147,11 +147,15 @@ Si aparece un crash, lo primero a revisar sigue siendo que los nombres del Story
 
 ## Fase 1 — Stack de Core Data
 
-- [~] `CoreData/PersistenceController.swift`: carga `InventarioModel` desde el `.xcdatamodeld` (no arma el modelo en codigo), `NSPersistentContainer`, `saveContext()` — compila, pero todavia no se ejecuto porque el modelo no existe
-- [ ] `InventarioModel.xcdatamodeld` con las 4 entidades del esquema de abajo, Codegen = "Class Definition" en cada una (asi Xcode genera las clases `NSManagedObject` solo, no hace falta escribirlas a mano)
-- [ ] Reenganchar `PersistenceController.shared.saveContext()` en `SceneDelegate.sceneDidEnterBackground` — se dejo comentado en Fase 0 porque tocar `shared` sin modelo crashea
-- [ ] **Funcional:** insertar y leer un registro de prueba (`NSFetchRequest`) confirma que el stack levanta sin crashear
-- [ ] **Probado:** corrido en el simulador
+- [x] `CoreData/PersistenceController.swift`: carga `InventarioModel` desde el `.xcdatamodeld` (no arma el modelo en codigo), `NSPersistentContainer`, `saveContext()`
+- [x] `InventarioModel.xcdatamodeld` con las 4 entidades del esquema de abajo, Codegen = "Class Definition" en cada una (`codeGenerationType="class"` en el XML) — `momc` genera las clases `NSManagedObject`, no hay `.swift` a mano para eso
+- [x] Reenganchado `PersistenceController.shared.saveContext()` en `SceneDelegate.sceneDidEnterBackground`
+- [x] **Funcional:** insert + `NSFetchRequest` + delete de una `CategoriaEntity` de prueba, y las 4 entidades aparecen en `managedObjectModel.entities`
+- [x] **Probado:** corrido en el simulador iPhone 16e, verificado por screenshot
+
+> **Temporal:** `Features/Debug/SmokeTestViewController.swift` es la escena que muestra el resultado de esa prueba en pantalla. Fase 2 la reemplaza por la de Login y ese archivo se borra.
+
+> **Sobre los tipos generados.** `apiId` va con `usesScalarValueType="NO"`, asi se genera como `NSNumber?` y se puede distinguir "todavia no sincronizado" (nil) de `apiId = 0`. Los no opcionales (`estadoSync`, `pendienteEliminar`, `precio`, `stock`, `orden`) van con `usesScalarValueType="YES"` y `defaultValueString`, para que se generen como escalares (`Int16`, `Bool`, `Double`, `Int32`) y no fallen la validacion al guardar.
 
 ### Esquema de Core Data
 

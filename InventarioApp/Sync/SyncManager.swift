@@ -28,112 +28,195 @@ final class SyncManager {
     /// Si falla la subida, se corta y no se baja nada: bajar despues de una
     /// subida fallida mostraria la version del servidor como si el cambio local
     /// se hubiera perdido, cuando en realidad sigue pendiente.
+    ///
+    /// Dentro de cada paso el orden entre entidades tampoco es casual:
+    ///
+    /// - **Al subir**, categorias y proveedores van antes que productos. Un
+    ///   producto creado sin conexion puede apuntar a una categoria tambien
+    ///   creada sin conexion, y `ProductoRequest` solo referencia las que ya
+    ///   tienen `apiId`. Si el producto subiera primero, se subiria sin
+    ///   categoria y el vinculo se perderia sin ningun error visible.
+    /// - **Al borrar**, productos van antes. Borrar una categoria que todavia
+    ///   tiene productos colgando es pedirle al backend un conflicto evitable.
     func sincronizar(completion: @escaping (Result<Void, APIError>) -> Void) {
-        subirPendientes { [weak self] resultado in
+        encadenar([
+            { self.subirPendientesDe(
+                CategoriaEntity.self,
+                nombreEntidad: "CategoriaEntity",
+                coleccion: .categorias,
+                recurso: Endpoint.categoria(apiId:),
+                cuerpo: CategoriaRequest.init(entidad:),
+                idDeLaRespuesta: { (dto: CategoriaDTO) in dto.id },
+                completion: $0
+            ) },
+            { self.subirPendientesDe(
+                ProveedorEntity.self,
+                nombreEntidad: "ProveedorEntity",
+                coleccion: .proveedores,
+                recurso: Endpoint.proveedor(apiId:),
+                cuerpo: ProveedorRequest.init(entidad:),
+                idDeLaRespuesta: { (dto: ProveedorDTO) in dto.id },
+                completion: $0
+            ) },
+            { self.subirPendientesDe(
+                ProductoEntity.self,
+                nombreEntidad: "ProductoEntity",
+                coleccion: .productos,
+                recurso: Endpoint.producto(apiId:),
+                cuerpo: ProductoRequest.init(entidad:),
+                idDeLaRespuesta: { (dto: ProductoDTO) in dto.id },
+                completion: $0
+            ) },
+            { self.procesarBajasDe("ProductoEntity", recurso: Endpoint.producto(apiId:), completion: $0) },
+            { self.procesarBajasDe("CategoriaEntity", recurso: Endpoint.categoria(apiId:), completion: $0) },
+            { self.procesarBajasDe("ProveedorEntity", recurso: Endpoint.proveedor(apiId:), completion: $0) },
+            { self.descargarDelServidor(completion: $0) }
+        ], completion: completion)
+    }
+
+    /// Corre los pasos en secuencia y corta en el primero que falle. Encadenar a
+    /// mano siete completion handlers anidados era ilegible.
+    private func encadenar(
+        _ pasos: [(@escaping (Result<Void, APIError>) -> Void) -> Void],
+        completion: @escaping (Result<Void, APIError>) -> Void
+    ) {
+        var cola = pasos
+        guard !cola.isEmpty else {
+            completion(.success(()))
+            return
+        }
+        let paso = cola.removeFirst()
+        paso { [weak self] resultado in
             guard let self else { return }
             switch resultado {
             case .failure(let error):
                 completion(.failure(error))
             case .success:
-                self.procesarBajas { [weak self] resultado in
-                    guard let self else { return }
-                    switch resultado {
-                    case .failure(let error):
-                        completion(.failure(error))
-                    case .success:
-                        self.descargarDelServidor(completion: completion)
-                    }
-                }
+                self.encadenar(cola, completion: completion)
             }
         }
     }
 
     // MARK: - Paso 1: subir pendientes
 
-    private func subirPendientes(completion: @escaping (Result<Void, APIError>) -> Void) {
-        let request = NSFetchRequest<ProductoEntity>(entityName: "ProductoEntity")
+    /// - Parameters:
+    ///   - coleccion: endpoint del POST (alta).
+    ///   - recurso: endpoint del PUT (edicion), armado con el `apiId`.
+    ///   - cuerpo: arma el JSON que espera el backend para esa entidad.
+    ///   - idDeLaRespuesta: saca el `id` del DTO que devuelve el servidor.
+    private func subirPendientesDe<T: NSManagedObject, Cuerpo: Encodable, Respuesta: Decodable>(
+        _ tipo: T.Type,
+        nombreEntidad: String,
+        coleccion: Endpoint,
+        recurso: @escaping (Int64) -> Endpoint,
+        cuerpo: @escaping (T) -> Cuerpo,
+        idDeLaRespuesta: @escaping (Respuesta) -> Int64,
+        completion: @escaping (Result<Void, APIError>) -> Void
+    ) {
+        let request = NSFetchRequest<T>(entityName: nombreEntidad)
         request.predicate = NSPredicate(format: "estadoSync == 0 AND pendienteEliminar == NO")
         let pendientes = (try? contexto.fetch(request)) ?? []
-        subirSiguiente(pendientes, completion: completion)
+        subirSiguiente(
+            pendientes,
+            coleccion: coleccion,
+            recurso: recurso,
+            cuerpo: cuerpo,
+            idDeLaRespuesta: idDeLaRespuesta,
+            completion: completion
+        )
     }
 
     /// Se sube de a uno y en secuencia, no en paralelo: cada POST devuelve el
     /// `apiId` que hay que guardar, y disparar todo junto contra un backend
     /// dormido en Render es la forma mas rapida de que todo timeoutee.
-    private func subirSiguiente(
-        _ restantes: [ProductoEntity],
+    private func subirSiguiente<T: NSManagedObject, Cuerpo: Encodable, Respuesta: Decodable>(
+        _ restantes: [T],
+        coleccion: Endpoint,
+        recurso: @escaping (Int64) -> Endpoint,
+        cuerpo: @escaping (T) -> Cuerpo,
+        idDeLaRespuesta: @escaping (Respuesta) -> Int64,
         completion: @escaping (Result<Void, APIError>) -> Void
     ) {
         var cola = restantes
-        guard let producto = cola.popLast() else {
+        guard let entidad = cola.popLast() else {
             PersistenceController.shared.saveContext()
             completion(.success(()))
             return
         }
 
-        let cuerpo = ProductoRequest(entidad: producto)
-
-        let alTerminar: (Result<ProductoDTO, APIError>) -> Void = { [weak self] resultado in
+        let alTerminar: (Result<Respuesta, APIError>) -> Void = { [weak self] resultado in
             guard let self else { return }
             switch resultado {
             case .failure(let error):
                 completion(.failure(error))
-            case .success(let dto):
+            case .success(let respuesta):
                 // En un POST este es el id que asigno el servidor; en un PUT es
                 // el mismo que ya tenia. Se guarda igual en los dos casos.
-                producto.apiId = NSNumber(value: dto.id)
-                producto.estadoSync = 1
-                self.subirSiguiente(cola, completion: completion)
+                entidad.setValue(NSNumber(value: idDeLaRespuesta(respuesta)), forKey: "apiId")
+                entidad.setValue(Int16(1), forKey: "estadoSync")
+                self.subirSiguiente(
+                    cola,
+                    coleccion: coleccion,
+                    recurso: recurso,
+                    cuerpo: cuerpo,
+                    idDeLaRespuesta: idDeLaRespuesta,
+                    completion: completion
+                )
             }
         }
 
-        if let apiId = producto.apiId {
-            APIClient.shared.put(.producto(apiId: apiId.int64Value), body: cuerpo, completion: alTerminar)
+        if let apiId = entidad.value(forKey: "apiId") as? NSNumber {
+            APIClient.shared.put(recurso(apiId.int64Value), body: cuerpo(entidad), completion: alTerminar)
         } else {
-            APIClient.shared.post(.productos, body: cuerpo, completion: alTerminar)
+            APIClient.shared.post(coleccion, body: cuerpo(entidad), completion: alTerminar)
         }
     }
 
     // MARK: - Paso 2: procesar bajas
 
-    private func procesarBajas(completion: @escaping (Result<Void, APIError>) -> Void) {
-        let request = NSFetchRequest<ProductoEntity>(entityName: "ProductoEntity")
+    private func procesarBajasDe(
+        _ nombreEntidad: String,
+        recurso: @escaping (Int64) -> Endpoint,
+        completion: @escaping (Result<Void, APIError>) -> Void
+    ) {
+        let request = NSFetchRequest<NSManagedObject>(entityName: nombreEntidad)
         request.predicate = NSPredicate(format: "pendienteEliminar == YES")
         let bajas = (try? contexto.fetch(request)) ?? []
-        borrarSiguiente(bajas, completion: completion)
+        borrarSiguiente(bajas, recurso: recurso, completion: completion)
     }
 
     private func borrarSiguiente(
-        _ restantes: [ProductoEntity],
+        _ restantes: [NSManagedObject],
+        recurso: @escaping (Int64) -> Endpoint,
         completion: @escaping (Result<Void, APIError>) -> Void
     ) {
         var cola = restantes
-        guard let producto = cola.popLast() else {
+        guard let entidad = cola.popLast() else {
             PersistenceController.shared.saveContext()
             completion(.success(()))
             return
         }
 
-        guard let apiId = producto.apiId else {
+        guard let apiId = entidad.value(forKey: "apiId") as? NSNumber else {
             // Nunca llego al servidor: no hay nada que borrar alla.
-            contexto.delete(producto)
-            borrarSiguiente(cola, completion: completion)
+            contexto.delete(entidad)
+            borrarSiguiente(cola, recurso: recurso, completion: completion)
             return
         }
 
-        APIClient.shared.delete(.producto(apiId: apiId.int64Value)) { [weak self] (resultado: Result<RespuestaVacia, APIError>) in
+        APIClient.shared.delete(recurso(apiId.int64Value)) { [weak self] (resultado: Result<RespuestaVacia, APIError>) in
             guard let self else { return }
             switch resultado {
             case .success:
-                self.contexto.delete(producto)
-                self.borrarSiguiente(cola, completion: completion)
+                self.contexto.delete(entidad)
+                self.borrarSiguiente(cola, recurso: recurso, completion: completion)
             case .failure(let error):
                 // Un 404 significa que en el servidor ya no esta: el objetivo
                 // ya se cumplio, asi que se borra la fila local igual. Sin esto
                 // la baja quedaria trabada para siempre reintentando.
                 if case .server(let status, _) = error, status == 404 {
-                    self.contexto.delete(producto)
-                    self.borrarSiguiente(cola, completion: completion)
+                    self.contexto.delete(entidad)
+                    self.borrarSiguiente(cola, recurso: recurso, completion: completion)
                 } else {
                     completion(.failure(error))
                 }

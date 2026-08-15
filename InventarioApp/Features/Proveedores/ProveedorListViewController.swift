@@ -1,16 +1,17 @@
 import UIKit
 
-final class ProductoListViewController: UIViewController {
+final class ProveedorListViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var emptyLabel: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var sincronizarButton: UIBarButtonItem!
-    @IBOutlet weak var salirButton: UIBarButtonItem!
 
-    private let viewModel = ProductoListViewModel()
+    private let viewModel = CatalogoListViewModel<ProveedorEntity>(
+        cargar: { ProveedorService().todos() },
+        borrar: { ProveedorService().marcarParaEliminar($0) }
+    )
     private let refreshControl = UIRefreshControl()
-    private var yaSincronizoAlEntrar = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,55 +22,40 @@ final class ProductoListViewController: UIViewController {
         viewModel.cargarLocales()
     }
 
-    /// Al volver del formulario hay que releer: el producto nuevo o editado ya
-    /// esta en Core Data.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.cargarLocales()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // Sin datos locales la pantalla no muestra nada util, asi que la primera
-        // vez se sincroniza sola. Despues queda a pedido, para no gastar una
-        // request en cada entrada.
-        guard !yaSincronizoAlEntrar, viewModel.estaVacio else { return }
-        yaSincronizoAlEntrar = true
-        viewModel.sincronizar()
     }
 
     // MARK: - Configuracion
 
     private func aplicarEstilos() {
         view.backgroundColor = Theme.Color.surfaceContainerLowest
-        title = "Productos"
+        title = "Proveedores"
 
         tableView.aplicarEstiloDeLista()
         aplicarAparienciaDeNavegacion()
+        sincronizarButton.aplicarEstiloDeTexto(color: Theme.Color.charcoalDeep)
 
         emptyLabel.aplicar(
             .bodyMD,
             color: Theme.Color.charcoalMuted,
-            texto: "Todavia no hay productos guardados.\nTocá Sincronizar para traerlos del servidor.",
+            texto: "Todavia no hay proveedores guardados.\nTocá Sincronizar para traerlos del servidor.",
             alineacion: .center
         )
         emptyLabel.isHidden = true
-
         activityIndicator.hidesWhenStopped = true
-
-        sincronizarButton.aplicarEstiloDeTexto(color: Theme.Color.charcoalDeep)
-        salirButton.aplicarEstiloDeTexto(color: Theme.Color.charcoalMuted)
     }
 
-    /// El "+" se agrega por codigo y no en el Storyboard: el editor visual no
-    /// deja poner dos items a la derecha sin pelear con el XML, y esto es una
-    /// linea.
+    /// Igual que en categorias: crear proveedores es exclusivo de ADMIN, asi que
+    /// el "+" no aparece para los demas roles.
     private func configurarBotonNuevo() {
+        guard SessionManager.shared.esAdmin else { return }
         let nuevo = UIBarButtonItem(
             image: UIImage(systemName: "plus"),
             style: .plain,
             target: self,
-            action: #selector(nuevoProductoTapped)
+            action: #selector(nuevoProveedorTapped)
         )
         nuevo.tintColor = Theme.Color.charcoalDeep
         navigationItem.rightBarButtonItems = [nuevo, sincronizarButton]
@@ -78,7 +64,7 @@ final class ProductoListViewController: UIViewController {
     private func configurarTabla() {
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.estimatedRowHeight = 84
+        tableView.estimatedRowHeight = 72
 
         refreshControl.addTarget(self, action: #selector(refrescar), for: .valueChanged)
         refreshControl.tintColor = Theme.Color.outline
@@ -114,33 +100,19 @@ final class ProductoListViewController: UIViewController {
         viewModel.sincronizar()
     }
 
-    @IBAction func salirTapped(_ sender: UIBarButtonItem) {
-        let alert = UIAlertController(
-            title: "Cerrar sesion",
-            message: "Los productos descargados siguen guardados en el dispositivo.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Salir", style: .destructive) { [weak self] _ in
-            SessionManager.shared.logout()
-            self?.dismiss(animated: true)
-        })
-        present(alert, animated: true)
-    }
-
     @objc private func refrescar() {
         viewModel.sincronizar()
     }
 
-    @objc private func nuevoProductoTapped() {
-        performSegue(withIdentifier: "irAFormularioProducto", sender: nil)
+    @objc private func nuevoProveedorTapped() {
+        performSegue(withIdentifier: "irAFormularioProveedor", sender: nil)
     }
 
-    /// `sender` nil = alta; con un `ProductoEntity` = edicion.
+    /// `sender` nil = alta; con un `ProveedorEntity` = edicion.
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard segue.identifier == "irAFormularioProducto",
-              let destino = segue.destination as? ProductoFormViewController else { return }
-        destino.configurar(con: sender as? ProductoEntity)
+        guard segue.identifier == "irAFormularioProveedor",
+              let destino = segue.destination as? ProveedorFormViewController else { return }
+        destino.configurar(con: sender as? ProveedorEntity)
     }
 
     private func mostrarError(_ mensaje: String) {
@@ -156,37 +128,53 @@ final class ProductoListViewController: UIViewController {
 
 // MARK: - UITableViewDataSource
 
-extension ProductoListViewController: UITableViewDataSource {
+extension ProveedorListViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.productos.count
+        viewModel.items.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let celda = tableView.dequeueReusableCell(
-            withIdentifier: ProductoTableViewCell.reuseIdentifier,
+            withIdentifier: CatalogoTableViewCell.reuseIdentifier,
             for: indexPath
         )
-        guard let celdaProducto = celda as? ProductoTableViewCell else { return celda }
-        celdaProducto.configurar(con: viewModel.productos[indexPath.row])
-        return celdaProducto
+        guard let celdaCatalogo = celda as? CatalogoTableViewCell else { return celda }
+
+        let proveedor = viewModel.items[indexPath.row]
+        celdaCatalogo.configurar(
+            nombre: proveedor.nombre,
+            detalle: Self.detalle(de: proveedor),
+            pendiente: proveedor.estadoSync == 0
+        )
+        return celdaCatalogo
+    }
+
+    /// Telefono y direccion son los dos opcionales; se muestra lo que haya.
+    private static func detalle(de proveedor: ProveedorEntity) -> String? {
+        [proveedor.telefono, proveedor.direccion]
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .joined(separator: " · ")
     }
 }
 
 // MARK: - UITableViewDelegate
 
-extension ProductoListViewController: UITableViewDelegate {
+extension ProveedorListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // Fase 5 mete el detalle en el medio; por ahora se va derecho a editar.
-        performSegue(withIdentifier: "irAFormularioProducto", sender: viewModel.productos[indexPath.row])
+        guard SessionManager.shared.esAdmin else { return }
+        performSegue(withIdentifier: "irAFormularioProveedor", sender: viewModel.items[indexPath.row])
     }
 
     func tableView(
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
+        guard SessionManager.shared.esAdmin else { return nil }
+
         let eliminar = UIContextualAction(style: .destructive, title: "Eliminar") { [weak self] _, _, listo in
             self?.confirmarEliminacion(en: indexPath)
             listo(true)
@@ -196,10 +184,10 @@ extension ProductoListViewController: UITableViewDelegate {
     }
 
     private func confirmarEliminacion(en indexPath: IndexPath) {
-        let producto = viewModel.productos[indexPath.row]
+        let proveedor = viewModel.items[indexPath.row]
         let alert = UIAlertController(
-            title: "Eliminar producto",
-            message: "\(producto.nombre ?? "Este producto") se va a borrar del servidor en la proxima sincronizacion.",
+            title: "Eliminar proveedor",
+            message: "\(proveedor.nombre ?? "Este proveedor") se va a borrar del servidor en la proxima sincronizacion. Los productos que lo usen quedan sin proveedor.",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))

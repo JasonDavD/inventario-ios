@@ -215,7 +215,7 @@ final class LoginViewController: UIViewController {
 
     private func bindViewModel() {
         viewModel.onLoginSuccess = { [weak self] in
-            self?.performSegue(withIdentifier: "irAProductos", sender: nil)
+            self?.performSegue(withIdentifier: "irAInicio", sender: nil)
         }
         viewModel.onLoginError = { [weak self] message in
             self?.mostrarError(message)
@@ -369,7 +369,7 @@ final class LoginViewController: UIViewController {
         guard !yaEvaluoSesionGuardada else { return }
         yaEvaluoSesionGuardada = true
         guard SessionManager.shared.isAuthenticated else { return }
-        performSegue(withIdentifier: "irAProductos", sender: nil)
+        performSegue(withIdentifier: "irAInicio", sender: nil)
     }
 }
 

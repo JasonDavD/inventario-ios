@@ -31,27 +31,6 @@ struct ProductoService {
         return (try? contexto.fetch(request)) ?? []
     }
 
-    func categoriasLocales() -> [CategoriaEntity] {
-        buscarOrdenadoPorNombre("CategoriaEntity")
-    }
-
-    func proveedoresLocales() -> [ProveedorEntity] {
-        buscarOrdenadoPorNombre("ProveedorEntity")
-    }
-
-    private func buscarOrdenadoPorNombre<T: NSManagedObject>(_ entidad: String) -> [T] {
-        let request = NSFetchRequest<T>(entityName: entidad)
-        request.predicate = NSPredicate(format: "pendienteEliminar == NO")
-        request.sortDescriptors = [
-            NSSortDescriptor(
-                key: "nombre",
-                ascending: true,
-                selector: #selector(NSString.localizedCaseInsensitiveCompare(_:))
-            )
-        ]
-        return (try? contexto.fetch(request)) ?? []
-    }
-
     // MARK: - Escritura
 
     @discardableResult

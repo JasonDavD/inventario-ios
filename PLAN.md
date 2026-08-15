@@ -112,14 +112,17 @@ InventarioApp/
 │   ├── APIClient.swift         URLSession + dataTask, completion handlers
 │   ├── Endpoint.swift, APIError.swift
 ├── Auth/                       KeychainService.swift, SessionManager.swift
+├── DesignSystem/               Theme.swift, Estilos.swift, PaddedTextField.swift, Formato.swift
 ├── Models/                     DTOs Codable del JSON de la API (distintos de las entidades de Core Data)
-├── Services/                   AuthService, ProductoService (red + Core Data)
+├── Services/                   AuthService, ProductoService, CatalogoService (red + Core Data)
 ├── Sync/                       SyncManager.swift
 ├── Features/
 │   ├── Auth/                   LoginViewController + LoginViewModel
+│   ├── Inicio/                 InicioTabBarController (las 3 listas en tabs)
+│   ├── Catalogo/               lo comun a Categorias y Proveedores: celda y ViewModel de lista
 │   ├── Productos/              ProductoListViewController + Cell, ProductoDetailViewController, ProductoFormViewController (+ ViewModels)
-│   ├── Categorias/
-│   └── Proveedores/
+│   ├── Categorias/             CategoriaListViewController, CategoriaFormViewController (+ ViewModels)
+│   └── Proveedores/            ProveedorListViewController, ProveedorFormViewController (+ ViewModels)
 └── Resources/                   Assets.xcassets, Info.plist (excluido del copy de recursos)
 ```
 
@@ -259,7 +262,7 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 - [x] Reconciliacion de borrados del servidor (ver nota abajo)
 - [x] **Funcional:** verificado el ciclo completo leyendo el SQLite en cada paso — alta local (`apiId` NULL, `estadoSync` 0) → sync → POST (`apiId` asignado, `estadoSync` 1); edicion → `estadoSync` 0 con `apiId` intacto → sync → PUT; baja → `pendienteEliminar` 1 con la fila todavia local → sync → DELETE y recien ahi se borra
 - [x] **Funcional (offline):** producto creado con el servidor inalcanzable queda PENDIENTE, el sync falla sin perder nada, y al volver la conexion se sube y toma su `apiId`
-- [ ] **Pendiente de confirmar:** verlo reflejado en el portal web Thymeleaf. El agente no puede entrar al portal; lo confirma el usuario
+- [x] **Confirmado por el usuario (2026-08-15):** los productos creados desde la app aparecen en el portal web Thymeleaf
 
 > **El orden de los tres pasos es lo que hace que el offline funcione.** Si la bajada corriera primero, pisaria con la version del servidor los cambios locales que todavia no se subieron. Como segunda linea de defensa, el upsert saltea toda fila con `estadoSync == 0` o `pendienteEliminar == true`.
 
@@ -278,10 +281,27 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 
 ## Fase 6 — Categorias y Proveedores (+ logo)
 
-- [ ] Mismo patron offline-first para `CategoriaEntity`/`ProveedorEntity` — CRUD solo ADMIN
-- [ ] Subida de logo de proveedor (misma limitacion: requiere `apiId`)
-- [ ] **Funcional:** gestion completa de categorias/proveedores, offline y sincronizado
-- [ ] **Probado:** pendiente de Mac
+- [x] `Networking/Endpoint.swift`: suma `categoria(apiId:)` y `proveedor(apiId:)`
+- [x] `Models/Inventario/CatalogoRequest.swift`: `CategoriaRequest` y `ProveedorRequest`
+- [x] `Services/CatalogoService.swift`: `CategoriaService` + `ProveedorService`, mismo contrato que `ProductoService` (toda escritura deja `estadoSync = 0`). Se llevo aca la lectura de categorias/proveedores que antes vivia en `ProductoService`
+- [x] `Sync/SyncManager`: los pasos 1 y 2 dejan de ser solo de producto y recorren las tres entidades, con el orden explicito en `sincronizar()` (ver nota abajo)
+- [x] `Features/Inicio/InicioTabBarController.swift`: tab bar con Productos / Categorias / Proveedores. El segue del Login pasa a llamarse `irAInicio` y apunta aca
+- [x] `Features/Catalogo/`: `CatalogoTableViewCell` (celda comun a las dos listas) y `CatalogoListViewModel<T>` (generico: las dos listas hacen lo mismo)
+- [x] `Features/Categorias/` y `Features/Proveedores/`: List + Form ViewController con su ViewModel cada uno
+- [x] `DesignSystem/Estilos.swift`: el estilado repetido (barra de navegacion, lista, campo de texto, boton primario) sale de las pantallas y queda en un solo lugar. Productos tambien pasa a usarlo
+- [x] `SessionManager.esAdmin` + gating: sin rol ADMIN no aparece el "+", no se abre el formulario al tocar una fila y no hay swipe para eliminar
+- [ ] Subida de logo de proveedor (misma limitacion que las imagenes: requiere `apiId`) — **no implementada**, queda junto con Fase 5 porque comparte el `multipart/form-data` que `APIClient` todavia no tiene
+- [x] **Funcional:** ciclo completo de categoria verificado leyendo el SQLite en cada paso — alta local (`apiId` NULL, `estadoSync` 0, chip PENDIENTE) → sync → POST (`apiId` 2, `estadoSync` 1); edicion → `estadoSync` 0 con `apiId` intacto → sync → PUT; baja → `pendienteEliminar` 1 con la fila todavia local → sync → DELETE y recien ahi se borra. En proveedor se verifico el alta (POST con telefono y `direccion` como `null`, no `""`) y la baja
+- [x] **Funcional:** los productos siguieron sincronizados durante todo el ciclo — generalizar los pasos 1 y 2 no rompio lo de Fase 4
+- [x] **Probado:** corrido en el simulador iPhone 16e con usuario ADMIN contra produccion, verificado por screenshot y por `sqlite3` en cada paso. Los dos registros de prueba se borraron del servidor al terminar
+
+> **Detalle visual conocido: el titulo no queda centrado en las tres listas.** En iOS 26 la barra de navegacion alinea el titulo a la izquierda y lo agranda cuando la pantalla no tiene boton a la izquierda. Productos tiene "Salir" y queda centrado; Categorias y Proveedores no, y ademas ese titulo grande ignora el `titleTextAttributes` del `Theme`. Se probaron y descartaron `largeTitleDisplayMode = .never` y `prefersLargeTitles = false`: no lo mueven, porque no es un large title clasico sino el layout nuevo de la barra. Se arregla con un `titleView` propio — queda para el pulido de Fase 7.
+
+> **El orden de subida importa tanto como el de los tres pasos.** Categorias y proveedores se suben ANTES que productos. Un producto creado sin conexion puede apuntar a una categoria tambien creada sin conexion, y `ProductoRequest` solo referencia las que ya tienen `apiId`: si el producto subiera primero, se subiria sin categoria y el vinculo se perderia sin ningun error visible. En las bajas es al reves — productos primero, para no pedirle al backend que borre una categoria que todavia tiene productos colgando.
+
+> **El gating por rol se adelanto de Fase 7.** La fase pide "CRUD solo ADMIN" y sin eso el formulario deja guardar local algo que el servidor despues rechaza con 403: el usuario se enteraria recien al sincronizar, con el cambio ya escrito en Core Data. Fase 7 sigue teniendo el gating de la lista de productos y el logout automatico al 401.
+
+> **`hasRole` no confia en el prefijo.** Spring Security manda el mismo rol como `ADMIN` o `ROLE_ADMIN` segun como este armado el token, y no hay copia del backend al lado para verificarlo. Se comparan las dos formas sin prefijo.
 
 ## Fase 7 — Roles y pulido final
 

@@ -52,7 +52,20 @@ final class SessionManager {
         isAuthenticated = false
     }
 
+    /// Spring Security no es consistente con el prefijo `ROLE_`: segun como este
+    /// armado el token, el mismo rol puede llegar como `ADMIN` o `ROLE_ADMIN`.
+    /// Se comparan las dos formas sin el prefijo para no depender de eso.
     func hasRole(_ role: String) -> Bool {
-        roles.contains(role)
+        let buscado = Self.sinPrefijo(role)
+        return roles.contains { Self.sinPrefijo($0) == buscado }
+    }
+
+    /// Categorias y proveedores son CRUD de ADMIN (ver la tabla de roles en
+    /// PLAN.md). Las pantallas esconden las acciones de escritura si no lo es.
+    var esAdmin: Bool { hasRole("ADMIN") }
+
+    private static func sinPrefijo(_ role: String) -> String {
+        let mayusculas = role.uppercased()
+        return mayusculas.hasPrefix("ROLE_") ? String(mayusculas.dropFirst(5)) : mayusculas
     }
 }

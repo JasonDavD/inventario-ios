@@ -12,7 +12,9 @@ enum Endpoint {
     case productos
     case producto(apiId: Int64)
     case categorias
+    case categoria(apiId: Int64)
     case proveedores
+    case proveedor(apiId: Int64)
 
     var url: URL {
         let path: String
@@ -25,8 +27,12 @@ enum Endpoint {
             path = "/api/productos/\(apiId)"
         case .categorias:
             path = "/api/categorias"
+        case .categoria(let apiId):
+            path = "/api/categorias/\(apiId)"
         case .proveedores:
             path = "/api/proveedores"
+        case .proveedor(let apiId):
+            path = "/api/proveedores/\(apiId)"
         }
         return URL(string: Endpoint.baseURL.absoluteString + path)!
     }

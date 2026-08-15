@@ -26,8 +26,8 @@ final class ProductoFormViewModel {
 
     // MARK: - Datos para los selectores
 
-    func categorias() -> [CategoriaEntity] { service.categoriasLocales() }
-    func proveedores() -> [ProveedorEntity] { service.proveedoresLocales() }
+    func categorias() -> [CategoriaEntity] { CategoriaService().todas() }
+    func proveedores() -> [ProveedorEntity] { ProveedorService().todos() }
 
     // MARK: - Guardado
 

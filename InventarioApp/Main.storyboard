@@ -232,7 +232,7 @@
                         <outlet property="titleLabel" destination="lbl-ti-001" id="out-00-020"/>
                         <outlet property="usernameCaptionLabel" destination="lbl-uc-001" id="out-00-021"/>
                         <outlet property="usernameField" destination="txt-us-001" id="out-00-022"/>
-                        <segue destination="NAV-00-001" kind="presentation" identifier="irAProductos" modalPresentationStyle="fullScreen" id="sg-lg-001"/>
+                        <segue destination="TAB-00-001" kind="presentation" identifier="irAInicio" modalPresentationStyle="fullScreen" id="sg-lg-001"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -243,6 +243,7 @@
         <scene sceneID="nav-sc-001">
             <objects>
                 <navigationController id="NAV-00-001" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Productos" image="shippingbox" catalog="system" id="tbi-pr-001"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nbr-00-001">
                         <rect key="frame" x="0.0" y="59" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -563,5 +564,508 @@
             </objects>
             <point key="canvasLocation" x="1500" y="-2"/>
         </scene>
+        <!--Inicio (tabs)-->
+        <scene sceneID="tab-sc-001">
+            <objects>
+                <tabBarController id="TAB-00-001" customClass="InicioTabBarController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="tbr-00-001">
+                        <rect key="frame" x="0.0" y="765" width="393" height="83"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="NAV-00-001" kind="relationship" relationship="viewControllers" id="sg-tb-001"/>
+                        <segue destination="NAV-CT-001" kind="relationship" relationship="viewControllers" id="sg-tb-002"/>
+                        <segue destination="NAV-PV-001" kind="relationship" relationship="viewControllers" id="sg-tb-003"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tab-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="400" y="-560"/>
+        </scene>
+        <!--Navigation Controller (Categorias)-->
+        <scene sceneID="ncy-sc-001">
+            <objects>
+                <navigationController id="NAV-CT-001" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Categorias" image="square.grid.2x2" catalog="system" id="tbi-ct-001"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nbr-ct-001">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="CLV-00-001" kind="relationship" relationship="rootViewController" id="sg-rt-002"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ncy-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="700" y="-560"/>
+        </scene>
+        <!--Categorias-->
+        <scene sceneID="cls-sc-001">
+            <objects>
+                <viewController id="CLV-00-001" customClass="CategoriaListViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="clv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="72" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="tbl-ct-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CatalogoCell" rowHeight="72" id="cel-ct-001" customClass="CatalogoTableViewCell" customModule="InventarioApp" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cel-ct-001" id="cnt-ct-001">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nombre" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-cn-001">
+                                                    <rect key="frame" x="20" y="14" width="200" height="24"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Detalle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-cd-001">
+                                                    <rect key="frame" x="20" y="42" width="200" height="20"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chp-cp-001">
+                                                    <rect key="frame" x="281" y="24" width="92" height="24"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PENDIENTE" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-cp-001">
+                                                            <rect key="frame" x="8" y="4" width="76" height="16"/>
+                                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="lbl-cp-001" firstAttribute="leading" secondItem="chp-cp-001" secondAttribute="leading" constant="8" id="cst-cc-001"/>
+                                                        <constraint firstAttribute="trailing" secondItem="lbl-cp-001" secondAttribute="trailing" constant="8" id="cst-cc-002"/>
+                                                        <constraint firstItem="lbl-cp-001" firstAttribute="top" secondItem="chp-cp-001" secondAttribute="top" constant="4" id="cst-cc-003"/>
+                                                        <constraint firstAttribute="bottom" secondItem="lbl-cp-001" secondAttribute="bottom" constant="4" id="cst-cc-004"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="lbl-cn-001" firstAttribute="leading" secondItem="cnt-ct-001" secondAttribute="leading" constant="20" id="cst-cx-001"/>
+                                                <constraint firstItem="lbl-cn-001" firstAttribute="top" secondItem="cnt-ct-001" secondAttribute="top" constant="14" id="cst-cx-002"/>
+                                                <constraint firstItem="lbl-cd-001" firstAttribute="leading" secondItem="cnt-ct-001" secondAttribute="leading" constant="20" id="cst-cx-003"/>
+                                                <constraint firstItem="lbl-cd-001" firstAttribute="top" secondItem="lbl-cn-001" secondAttribute="bottom" constant="4" id="cst-cx-004"/>
+                                                <constraint firstAttribute="bottom" secondItem="lbl-cd-001" secondAttribute="bottom" constant="14" id="cst-cx-005"/>
+                                                <constraint firstItem="chp-cp-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lbl-cn-001" secondAttribute="trailing" constant="12" id="cst-cx-006"/>
+                                                <constraint firstItem="chp-cp-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lbl-cd-001" secondAttribute="trailing" constant="12" id="cst-cx-007"/>
+                                                <constraint firstAttribute="trailing" secondItem="chp-cp-001" secondAttribute="trailing" constant="20" id="cst-cx-008"/>
+                                                <constraint firstItem="chp-cp-001" firstAttribute="centerY" secondItem="cnt-ct-001" secondAttribute="centerY" id="cst-cx-009"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="detalleLabel" destination="lbl-cd-001" id="out-cc-001"/>
+                                            <outlet property="nombreLabel" destination="lbl-cn-001" id="out-cc-002"/>
+                                            <outlet property="pendienteChipView" destination="chp-cp-001" id="out-cc-003"/>
+                                            <outlet property="pendienteLabel" destination="lbl-cp-001" id="out-cc-004"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ce-001">
+                                <rect key="frame" x="40" y="360" width="313" height="40"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-ct-001">
+                                <rect key="frame" x="186.5" y="310" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="clv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="tbl-ct-001" firstAttribute="leading" secondItem="clv-vw-001" secondAttribute="leading" id="cst-cv-001"/>
+                            <constraint firstAttribute="trailing" secondItem="tbl-ct-001" secondAttribute="trailing" id="cst-cv-002"/>
+                            <constraint firstItem="tbl-ct-001" firstAttribute="top" secondItem="clv-vw-001" secondAttribute="top" id="cst-cv-003"/>
+                            <constraint firstAttribute="bottom" secondItem="tbl-ct-001" secondAttribute="bottom" id="cst-cv-004"/>
+                            <constraint firstItem="lbl-ce-001" firstAttribute="leading" secondItem="clv-sa-001" secondAttribute="leading" constant="40" id="cst-cv-005"/>
+                            <constraint firstItem="clv-sa-001" firstAttribute="trailing" secondItem="lbl-ce-001" secondAttribute="trailing" constant="40" id="cst-cv-006"/>
+                            <constraint firstItem="lbl-ce-001" firstAttribute="centerY" secondItem="clv-vw-001" secondAttribute="centerY" id="cst-cv-007"/>
+                            <constraint firstItem="act-ct-001" firstAttribute="centerX" secondItem="clv-vw-001" secondAttribute="centerX" id="cst-cv-008"/>
+                            <constraint firstItem="lbl-ce-001" firstAttribute="top" secondItem="act-ct-001" secondAttribute="bottom" constant="30" id="cst-cv-009"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Categorias" id="nvi-ct-001">
+                        <barButtonItem key="rightBarButtonItem" title="Sincronizar" id="bbi-cs-001">
+                            <connections>
+                                <action selector="sincronizarTapped:" destination="CLV-00-001" id="act-cs-001"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="activityIndicator" destination="act-ct-001" id="out-cv-001"/>
+                        <outlet property="emptyLabel" destination="lbl-ce-001" id="out-cv-002"/>
+                        <outlet property="sincronizarButton" destination="bbi-cs-001" id="out-cv-003"/>
+                        <outlet property="tableView" destination="tbl-ct-001" id="out-cv-004"/>
+                        <segue destination="CFV-00-001" kind="show" identifier="irAFormularioCategoria" id="sg-cf-001"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="clv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1100" y="-560"/>
+        </scene>
+        <!--Formulario de categoria-->
+        <scene sceneID="cfm-sc-001">
+            <objects>
+                <viewController id="CFV-00-001" customClass="CategoriaFormViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="cfv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="scr-cf-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="fill" translatesAutoresizingMaskIntoConstraints="NO" id="stk-cf-001">
+                                        <rect key="frame" x="20" y="24" width="353" height="280"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nombre" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fcn-01">
+                                                <rect key="frame" x="0.0" y="0.0" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fcn-01" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="22" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fcn-01"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Descripcion" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fcd-01">
+                                                <rect key="frame" x="0.0" y="94" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fcd-01" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="116" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fcd-01"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fce-01">
+                                                <rect key="frame" x="0.0" y="204" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fcr-01">
+                                                <rect key="frame" x="0.0" y="212" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-fcg-01">
+                                                <rect key="frame" x="0.0" y="228" width="353" height="46"/>
+                                                <state key="normal" title="Guardar"/>
+                                                <connections>
+                                                    <action selector="guardarTapped:" destination="CFV-00-001" eventType="touchUpInside" id="act-fcg-01"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <viewLayoutGuide key="contentLayoutGuide" id="clg-cf-001"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="flg-cf-001"/>
+                                <constraints>
+                                    <constraint firstItem="stk-cf-001" firstAttribute="leading" secondItem="clg-cf-001" secondAttribute="leading" constant="20" id="cst-cs-001"/>
+                                    <constraint firstItem="clg-cf-001" firstAttribute="trailing" secondItem="stk-cf-001" secondAttribute="trailing" constant="20" id="cst-cs-002"/>
+                                    <constraint firstItem="stk-cf-001" firstAttribute="top" secondItem="clg-cf-001" secondAttribute="top" constant="24" id="cst-cs-003"/>
+                                    <constraint firstItem="clg-cf-001" firstAttribute="bottom" secondItem="stk-cf-001" secondAttribute="bottom" constant="32" id="cst-cs-004"/>
+                                    <constraint firstItem="stk-cf-001" firstAttribute="width" secondItem="flg-cf-001" secondAttribute="width" constant="-40" id="cst-cs-005"/>
+                                </constraints>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="cfv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="scr-cf-001" firstAttribute="leading" secondItem="cfv-sa-001" secondAttribute="leading" id="cst-cf-101"/>
+                            <constraint firstItem="cfv-sa-001" firstAttribute="trailing" secondItem="scr-cf-001" secondAttribute="trailing" id="cst-cf-102"/>
+                            <constraint firstItem="scr-cf-001" firstAttribute="top" secondItem="cfv-sa-001" secondAttribute="top" id="cst-cf-103"/>
+                            <constraint firstItem="cfv-sa-001" firstAttribute="bottom" secondItem="scr-cf-001" secondAttribute="bottom" id="cst-cf-104"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="nvi-cf-001"/>
+                    <connections>
+                        <outlet property="contentStack" destination="stk-cf-001" id="out-cf-001"/>
+                        <outlet property="descripcionCaptionLabel" destination="lbl-fcd-01" id="out-cf-002"/>
+                        <outlet property="descripcionField" destination="txt-fcd-01" id="out-cf-003"/>
+                        <outlet property="errorLabel" destination="lbl-fcr-01" id="out-cf-004"/>
+                        <outlet property="estadoLabel" destination="lbl-fce-01" id="out-cf-005"/>
+                        <outlet property="guardarButton" destination="btn-fcg-01" id="out-cf-006"/>
+                        <outlet property="nombreCaptionLabel" destination="lbl-fcn-01" id="out-cf-007"/>
+                        <outlet property="nombreField" destination="txt-fcn-01" id="out-cf-008"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cfv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1500" y="-560"/>
+        </scene>
+        <!--Navigation Controller (Proveedores)-->
+        <scene sceneID="npv-sc-001">
+            <objects>
+                <navigationController id="NAV-PV-001" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Proveedores" image="building.2" catalog="system" id="tbi-pv-001"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nbr-pv-001">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="VLV-00-001" kind="relationship" relationship="rootViewController" id="sg-rt-003"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="npv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="700" y="-1120"/>
+        </scene>
+        <!--Proveedores-->
+        <scene sceneID="vls-sc-001">
+            <objects>
+                <viewController id="VLV-00-001" customClass="ProveedorListViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="vlv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="72" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="tbl-pv-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CatalogoCell" rowHeight="72" id="cel-pv-001" customClass="CatalogoTableViewCell" customModule="InventarioApp" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cel-pv-001" id="cnt-pv-001">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nombre" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-vn-001">
+                                                    <rect key="frame" x="20" y="14" width="200" height="24"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Detalle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-vd-001">
+                                                    <rect key="frame" x="20" y="42" width="200" height="20"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chp-vp-001">
+                                                    <rect key="frame" x="281" y="24" width="92" height="24"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PENDIENTE" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-vp-001">
+                                                            <rect key="frame" x="8" y="4" width="76" height="16"/>
+                                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="lbl-vp-001" firstAttribute="leading" secondItem="chp-vp-001" secondAttribute="leading" constant="8" id="cst-vc-001"/>
+                                                        <constraint firstAttribute="trailing" secondItem="lbl-vp-001" secondAttribute="trailing" constant="8" id="cst-vc-002"/>
+                                                        <constraint firstItem="lbl-vp-001" firstAttribute="top" secondItem="chp-vp-001" secondAttribute="top" constant="4" id="cst-vc-003"/>
+                                                        <constraint firstAttribute="bottom" secondItem="lbl-vp-001" secondAttribute="bottom" constant="4" id="cst-vc-004"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="lbl-vn-001" firstAttribute="leading" secondItem="cnt-pv-001" secondAttribute="leading" constant="20" id="cst-vx-001"/>
+                                                <constraint firstItem="lbl-vn-001" firstAttribute="top" secondItem="cnt-pv-001" secondAttribute="top" constant="14" id="cst-vx-002"/>
+                                                <constraint firstItem="lbl-vd-001" firstAttribute="leading" secondItem="cnt-pv-001" secondAttribute="leading" constant="20" id="cst-vx-003"/>
+                                                <constraint firstItem="lbl-vd-001" firstAttribute="top" secondItem="lbl-vn-001" secondAttribute="bottom" constant="4" id="cst-vx-004"/>
+                                                <constraint firstAttribute="bottom" secondItem="lbl-vd-001" secondAttribute="bottom" constant="14" id="cst-vx-005"/>
+                                                <constraint firstItem="chp-vp-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lbl-vn-001" secondAttribute="trailing" constant="12" id="cst-vx-006"/>
+                                                <constraint firstItem="chp-vp-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lbl-vd-001" secondAttribute="trailing" constant="12" id="cst-vx-007"/>
+                                                <constraint firstAttribute="trailing" secondItem="chp-vp-001" secondAttribute="trailing" constant="20" id="cst-vx-008"/>
+                                                <constraint firstItem="chp-vp-001" firstAttribute="centerY" secondItem="cnt-pv-001" secondAttribute="centerY" id="cst-vx-009"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="detalleLabel" destination="lbl-vd-001" id="out-vc-001"/>
+                                            <outlet property="nombreLabel" destination="lbl-vn-001" id="out-vc-002"/>
+                                            <outlet property="pendienteChipView" destination="chp-vp-001" id="out-vc-003"/>
+                                            <outlet property="pendienteLabel" destination="lbl-vp-001" id="out-vc-004"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ve-001">
+                                <rect key="frame" x="40" y="360" width="313" height="40"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-pv-001">
+                                <rect key="frame" x="186.5" y="310" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vlv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="tbl-pv-001" firstAttribute="leading" secondItem="vlv-vw-001" secondAttribute="leading" id="cst-vv-001"/>
+                            <constraint firstAttribute="trailing" secondItem="tbl-pv-001" secondAttribute="trailing" id="cst-vv-002"/>
+                            <constraint firstItem="tbl-pv-001" firstAttribute="top" secondItem="vlv-vw-001" secondAttribute="top" id="cst-vv-003"/>
+                            <constraint firstAttribute="bottom" secondItem="tbl-pv-001" secondAttribute="bottom" id="cst-vv-004"/>
+                            <constraint firstItem="lbl-ve-001" firstAttribute="leading" secondItem="vlv-sa-001" secondAttribute="leading" constant="40" id="cst-vv-005"/>
+                            <constraint firstItem="vlv-sa-001" firstAttribute="trailing" secondItem="lbl-ve-001" secondAttribute="trailing" constant="40" id="cst-vv-006"/>
+                            <constraint firstItem="lbl-ve-001" firstAttribute="centerY" secondItem="vlv-vw-001" secondAttribute="centerY" id="cst-vv-007"/>
+                            <constraint firstItem="act-pv-001" firstAttribute="centerX" secondItem="vlv-vw-001" secondAttribute="centerX" id="cst-vv-008"/>
+                            <constraint firstItem="lbl-ve-001" firstAttribute="top" secondItem="act-pv-001" secondAttribute="bottom" constant="30" id="cst-vv-009"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Proveedores" id="nvi-pv-001">
+                        <barButtonItem key="rightBarButtonItem" title="Sincronizar" id="bbi-vs-001">
+                            <connections>
+                                <action selector="sincronizarTapped:" destination="VLV-00-001" id="act-vs-001"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="activityIndicator" destination="act-pv-001" id="out-vv-001"/>
+                        <outlet property="emptyLabel" destination="lbl-ve-001" id="out-vv-002"/>
+                        <outlet property="sincronizarButton" destination="bbi-vs-001" id="out-vv-003"/>
+                        <outlet property="tableView" destination="tbl-pv-001" id="out-vv-004"/>
+                        <segue destination="VFV-00-001" kind="show" identifier="irAFormularioProveedor" id="sg-vf-001"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vlv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1100" y="-1120"/>
+        </scene>
+        <!--Formulario de proveedor-->
+        <scene sceneID="vfm-sc-001">
+            <objects>
+                <viewController id="VFV-00-001" customClass="ProveedorFormViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="vfv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="scr-vf-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="fill" translatesAutoresizingMaskIntoConstraints="NO" id="stk-vf-001">
+                                        <rect key="frame" x="20" y="24" width="353" height="374"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nombre" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fvn-01">
+                                                <rect key="frame" x="0.0" y="0.0" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fvn-01" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="22" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fvn-01"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Telefono" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fvt-01">
+                                                <rect key="frame" x="0.0" y="94" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fvt-01" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="116" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fvt-01"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Direccion" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fvd-01">
+                                                <rect key="frame" x="0.0" y="188" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fvd-01" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="210" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fvd-01"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fve-01">
+                                                <rect key="frame" x="0.0" y="298" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fvr-01">
+                                                <rect key="frame" x="0.0" y="306" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-fvg-01">
+                                                <rect key="frame" x="0.0" y="322" width="353" height="46"/>
+                                                <state key="normal" title="Guardar"/>
+                                                <connections>
+                                                    <action selector="guardarTapped:" destination="VFV-00-001" eventType="touchUpInside" id="act-fvg-01"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <viewLayoutGuide key="contentLayoutGuide" id="clg-vf-001"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="flg-vf-001"/>
+                                <constraints>
+                                    <constraint firstItem="stk-vf-001" firstAttribute="leading" secondItem="clg-vf-001" secondAttribute="leading" constant="20" id="cst-vs-001"/>
+                                    <constraint firstItem="clg-vf-001" firstAttribute="trailing" secondItem="stk-vf-001" secondAttribute="trailing" constant="20" id="cst-vs-002"/>
+                                    <constraint firstItem="stk-vf-001" firstAttribute="top" secondItem="clg-vf-001" secondAttribute="top" constant="24" id="cst-vs-003"/>
+                                    <constraint firstItem="clg-vf-001" firstAttribute="bottom" secondItem="stk-vf-001" secondAttribute="bottom" constant="32" id="cst-vs-004"/>
+                                    <constraint firstItem="stk-vf-001" firstAttribute="width" secondItem="flg-vf-001" secondAttribute="width" constant="-40" id="cst-vs-005"/>
+                                </constraints>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vfv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="scr-vf-001" firstAttribute="leading" secondItem="vfv-sa-001" secondAttribute="leading" id="cst-vf-101"/>
+                            <constraint firstItem="vfv-sa-001" firstAttribute="trailing" secondItem="scr-vf-001" secondAttribute="trailing" id="cst-vf-102"/>
+                            <constraint firstItem="scr-vf-001" firstAttribute="top" secondItem="vfv-sa-001" secondAttribute="top" id="cst-vf-103"/>
+                            <constraint firstItem="vfv-sa-001" firstAttribute="bottom" secondItem="scr-vf-001" secondAttribute="bottom" id="cst-vf-104"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="nvi-vf-001"/>
+                    <connections>
+                        <outlet property="contentStack" destination="stk-vf-001" id="out-vf-001"/>
+                        <outlet property="direccionCaptionLabel" destination="lbl-fvd-01" id="out-vf-002"/>
+                        <outlet property="direccionField" destination="txt-fvd-01" id="out-vf-003"/>
+                        <outlet property="errorLabel" destination="lbl-fvr-01" id="out-vf-004"/>
+                        <outlet property="estadoLabel" destination="lbl-fve-01" id="out-vf-005"/>
+                        <outlet property="guardarButton" destination="btn-fvg-01" id="out-vf-006"/>
+                        <outlet property="nombreCaptionLabel" destination="lbl-fvn-01" id="out-vf-007"/>
+                        <outlet property="nombreField" destination="txt-fvn-01" id="out-vf-008"/>
+                        <outlet property="telefonoCaptionLabel" destination="lbl-fvt-01" id="out-vf-009"/>
+                        <outlet property="telefonoField" destination="txt-fvt-01" id="out-vf-010"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vfv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1500" y="-1120"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="building.2" catalog="system" width="128" height="86"/>
+        <image name="shippingbox" catalog="system" width="123" height="128"/>
+        <image name="square.grid.2x2" catalog="system" width="128" height="119"/>
+    </resources>
 </document>

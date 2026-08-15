@@ -49,20 +49,12 @@ final class ProductoFormViewController: UIViewController {
         categoriaCaptionLabel.aplicar(.labelLG, color: Theme.Color.charcoalMuted, texto: "Categoria")
         proveedorCaptionLabel.aplicar(.labelLG, color: Theme.Color.charcoalMuted, texto: "Proveedor")
 
-        [nombreField, precioField, stockField].forEach { campo in
-            campo?.backgroundColor = Theme.Color.surfaceContainerLowest
-            campo?.aplicarBorde(radio: Theme.Radius.base)
-            campo?.font = Theme.TextStyle.bodyMD.font
-            campo?.textColor = Theme.Color.charcoalDeep
-            campo?.tintColor = Theme.Color.charcoalDeep
-            campo?.delegate = self
-        }
+        nombreField.aplicarEstiloDeCampo(placeholder: "Ej. Martillo de carpintero")
+        precioField.aplicarEstiloDeCampo(placeholder: "0.00")
+        stockField.aplicarEstiloDeCampo(placeholder: "0")
+        [nombreField, precioField, stockField].forEach { $0?.delegate = self }
         precioField.keyboardType = .decimalPad
         stockField.keyboardType = .numberPad
-
-        aplicarPlaceholder(nombreField, texto: "Ej. Martillo de carpintero")
-        aplicarPlaceholder(precioField, texto: "0.00")
-        aplicarPlaceholder(stockField, texto: "0")
 
         [categoriaButton, proveedorButton].forEach { boton in
             var config = UIButton.Configuration.plain()
@@ -75,16 +67,7 @@ final class ProductoFormViewController: UIViewController {
             boton?.aplicarBorde(radio: Theme.Radius.base)
         }
 
-        var configGuardar = UIButton.Configuration.filled()
-        configGuardar.baseBackgroundColor = Theme.Color.charcoalDeep
-        configGuardar.baseForegroundColor = Theme.Color.onPrimary
-        configGuardar.background.cornerRadius = Theme.Radius.base
-        configGuardar.cornerStyle = .fixed
-        configGuardar.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)
-        configGuardar.title = "Guardar"
-        configGuardar.titleTextAttributesTransformer = Theme.TextStyle.labelLG
-            .transformadorTitulo(color: Theme.Color.onPrimary)
-        guardarButton.configuration = configGuardar
+        guardarButton.aplicarEstiloPrimario(titulo: "Guardar")
 
         errorLabel.attributedText = nil
         estadoLabel.attributedText = nil
@@ -92,16 +75,6 @@ final class ProductoFormViewController: UIViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(cerrarTeclado))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
-    }
-
-    private func aplicarPlaceholder(_ campo: UITextField, texto: String) {
-        campo.attributedPlaceholder = NSAttributedString(
-            string: texto,
-            attributes: [
-                .font: Theme.TextStyle.bodyMD.font,
-                .foregroundColor: Theme.Color.outline
-            ]
-        )
     }
 
     private func configurarEspaciados() {

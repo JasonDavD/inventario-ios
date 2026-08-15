@@ -274,10 +274,25 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 
 ## Fase 5 — Imagenes (requiere producto ya sincronizado)
 
-- [ ] `Features/Productos/ProductoDetailViewController.swift` con galeria de imagenes
-- [ ] Subida de imagenes solo habilitada si `producto.apiId != nil`
-- [ ] **Funcional:** producto sincronizado permite agregar hasta 5 fotos; producto sin sincronizar no muestra esa opcion
-- [ ] **Probado:** pendiente de Mac
+- [x] `Networking/APIClient.upload(...)`: `multipart/form-data` armado a mano, con `RespuestaIgnorada` para no atarse al shape de la respuesta (ver notas abajo)
+- [x] `Networking/Endpoint.swift`: `imagenesDeProducto`, `imagenDeProducto`, `logoDeProveedor`
+- [x] `Networking/DescargadorDeImagenes.swift`: baja de Cloudinary con `dataTask` + `NSCache`
+- [x] `Services/ImagenService.swift`: subir/borrar imagen de producto y subir logo de proveedor
+- [x] `Features/Productos/ProductoDetailViewController.swift` + ViewModel, con galeria en `UICollectionView` horizontal y `ImagenCollectionViewCell`
+- [x] Tocar una fila del listado ahora va al detalle; editar se hace desde ahi
+- [x] Subida de imagenes solo habilitada si `producto.apiId != nil` (y con rol OPERADOR para arriba)
+- [x] Subida de logo de proveedor, con la misma limitacion — **cierra el pendiente de Fase 6**
+- [x] **Funcional:** verificado contra produccion — subida de foto (POST multipart → URL de Cloudinary en `ZPRODUCTOIMAGENENTITY`), descarga y visualizacion en la galeria, y borrado (DELETE → sin filas locales). Logo de proveedor subido y bajado igual
+- [x] **Funcional:** producto sin sincronizar no muestra el boton de agregar foto, muestra la explicacion de por que
+- [x] **Probado:** corrido en el simulador iPhone 16e, verificado por screenshot y por `sqlite3` en cada paso. Los registros de prueba se borraron del servidor al terminar
+
+> **El cuerpo multipart se arma a mano y es sensible al formato.** Los saltos de linea van CRLF (`\r\n`), no `\n`, y la ultima frontera lleva `--` al final. Un salto mal puesto hace que el servidor no encuentre el archivo y conteste 400 sin decir por que. El campo se llama `archivo` y sirve igual para las imagenes de producto y para el logo de proveedor — verificado contra los dos endpoints.
+
+> **`RespuestaIgnorada` en vez de adivinar el shape.** No hay copia del backend al lado para saber si `POST /api/productos/{id}/imagenes` devuelve la imagen creada, el producto entero o una lista. Un `init(from:) throws {}` vacio decodifica las tres sin fallar; despues se vuelve a bajar del servidor, que es la fuente de verdad de las URLs y los `apiId` de imagen.
+
+> **Estas operaciones son online y no pasan por el `SyncManager`.** El backend asocia el archivo al recurso padre por su id, asi que no se pueden encolar sin `apiId`. Es la limitacion de diseño que este plan ya anticipaba, ahora con la UI que la explica en pantalla en vez de dejar un boton que falla.
+
+> **`PHPickerViewController` y no `UIImagePickerController`.** Corre fuera del proceso de la app: no necesita permiso de fototeca ni entrada en el `Info.plist`, y la app solo recibe la foto elegida. Verificado — el selector abre sin ningun prompt de permisos.
 
 ## Fase 6 — Categorias y Proveedores (+ logo)
 
@@ -290,7 +305,7 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 - [x] `Features/Categorias/` y `Features/Proveedores/`: List + Form ViewController con su ViewModel cada uno
 - [x] `DesignSystem/Estilos.swift`: el estilado repetido (barra de navegacion, lista, campo de texto, boton primario) sale de las pantallas y queda en un solo lugar. Productos tambien pasa a usarlo
 - [x] `SessionManager.esAdmin` + gating: sin rol ADMIN no aparece el "+", no se abre el formulario al tocar una fila y no hay swipe para eliminar
-- [ ] Subida de logo de proveedor (misma limitacion que las imagenes: requiere `apiId`) — **no implementada**, queda junto con Fase 5 porque comparte el `multipart/form-data` que `APIClient` todavia no tiene
+- [x] Subida de logo de proveedor (misma limitacion que las imagenes: requiere `apiId`) — se hizo en Fase 5, que es donde entro el `multipart/form-data`
 - [x] **Funcional:** ciclo completo de categoria verificado leyendo el SQLite en cada paso — alta local (`apiId` NULL, `estadoSync` 0, chip PENDIENTE) → sync → POST (`apiId` 2, `estadoSync` 1); edicion → `estadoSync` 0 con `apiId` intacto → sync → PUT; baja → `pendienteEliminar` 1 con la fila todavia local → sync → DELETE y recien ahi se borra. En proveedor se verifico el alta (POST con telefono y `direccion` como `null`, no `""`) y la baja
 - [x] **Funcional:** los productos siguieron sincronizados durante todo el ciclo — generalizar los pasos 1 y 2 no rompio lo de Fase 4
 - [x] **Probado:** corrido en el simulador iPhone 16e con usuario ADMIN contra produccion, verificado por screenshot y por `sqlite3` en cada paso. Los dos registros de prueba se borraron del servidor al terminar
@@ -305,11 +320,12 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 
 ## Fase 7 — Roles y pulido final
 
-- [ ] Ocultar/deshabilitar acciones segun rol en las 3 listas
+- [x] Ocultar/deshabilitar acciones segun rol en las 3 listas — se adelanto: categorias y proveedores en Fase 6, productos en Fase 5. Productos usa `puedeEditarProductos` (OPERADOR o ADMIN) para el "+" y el detalle, y `esAdmin` para el swipe de eliminar, que es lo que pide la tabla de roles
 - [ ] Manejo de errores de red consistente + interceptar 401 (logout automatico)
+- [ ] Titulo de la barra centrado en las tres listas, con un `titleView` propio (ver la nota de Fase 6)
 - [ ] README.md del repo `inventario-ios` (setup, capturas, como correrlo)
 - [ ] **Funcional:** demo completa de punta a punta contra produccion, con los 3 roles
-- [ ] **Probado:** pendiente de Mac
+- [ ] **Probado:** solo se corrio con un usuario ADMIN; falta ver la app con OPERADOR y con LECTOR
 
 ---
 

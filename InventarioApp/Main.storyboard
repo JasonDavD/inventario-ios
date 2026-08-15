@@ -401,6 +401,7 @@
                         <outlet property="sincronizarButton" destination="bbi-sy-001" id="out-pv-004"/>
                         <outlet property="tableView" destination="tbl-00-001" id="out-pv-005"/>
                         <segue destination="PFV-00-001" kind="show" identifier="irAFormularioProducto" id="sg-fm-001"/>
+                        <segue destination="PDV-00-001" kind="show" identifier="irADetalleProducto" id="sg-dt-001"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="plv-fr-001" sceneMemberID="firstResponder"/>
@@ -563,6 +564,182 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pfv-fr-001" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1500" y="-2"/>
+        </scene>
+        <!--Detalle de producto-->
+        <scene sceneID="pdt-sc-001">
+            <objects>
+                <viewController id="PDV-00-001" customClass="ProductoDetailViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="pdv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="scr-dt-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="fill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="stk-dt-001">
+                                        <rect key="frame" x="20" y="24" width="353" height="500"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nombre" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-dn-001">
+                                                <rect key="frame" x="0.0" y="0.0" width="353" height="32"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="24"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="S/ 0.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-dp-001">
+                                                <rect key="frame" x="0.0" y="40" width="353" height="24"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 unidades en stock" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ds-001">
+                                                <rect key="frame" x="0.0" y="72" width="353" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Categoria:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-dc-001">
+                                                <rect key="frame" x="0.0" y="100" width="353" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Proveedor:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-dv-001">
+                                                <rect key="frame" x="0.0" y="128" width="353" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-de-001">
+                                                <rect key="frame" x="0.0" y="156" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="firstBaseline" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="stk-dh-001">
+                                                <rect key="frame" x="0.0" y="188" width="353" height="18"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="251" text="Fotos" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-df-001">
+                                                        <rect key="frame" x="0.0" y="0.0" width="273" height="18"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="0 de 5" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-dk-001">
+                                                        <rect key="frame" x="281" y="0.0" width="72" height="16"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </stackView>
+                                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="col-dt-001">
+                                                <rect key="frame" x="0.0" y="214" width="353" height="120"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="120" id="cst-dt-col"/>
+                                                </constraints>
+                                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="8" minimumInteritemSpacing="8" id="cvl-dt-001">
+                                                    <size key="itemSize" width="120" height="120"/>
+                                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                                </collectionViewFlowLayout>
+                                                <cells>
+                                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ImagenCell" id="cel-im-001" customClass="ImagenCollectionViewCell" customModule="InventarioApp" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="cnv-im-001">
+                                                            <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <subviews>
+                                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="img-im-001">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+                                                                </imageView>
+                                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-im-001">
+                                                                    <rect key="frame" x="50" y="50" width="20" height="20"/>
+                                                                </activityIndicatorView>
+                                                            </subviews>
+                                                            <constraints>
+                                                                <constraint firstItem="img-im-001" firstAttribute="leading" secondItem="cnv-im-001" secondAttribute="leading" id="cst-im-001"/>
+                                                                <constraint firstAttribute="trailing" secondItem="img-im-001" secondAttribute="trailing" id="cst-im-002"/>
+                                                                <constraint firstItem="img-im-001" firstAttribute="top" secondItem="cnv-im-001" secondAttribute="top" id="cst-im-003"/>
+                                                                <constraint firstAttribute="bottom" secondItem="img-im-001" secondAttribute="bottom" id="cst-im-004"/>
+                                                                <constraint firstItem="act-im-001" firstAttribute="centerX" secondItem="cnv-im-001" secondAttribute="centerX" id="cst-im-005"/>
+                                                                <constraint firstItem="act-im-001" firstAttribute="centerY" secondItem="cnv-im-001" secondAttribute="centerY" id="cst-im-006"/>
+                                                            </constraints>
+                                                        </view>
+                                                        <connections>
+                                                            <outlet property="activityIndicator" destination="act-im-001" id="out-im-001"/>
+                                                            <outlet property="imageView" destination="img-im-001" id="out-im-002"/>
+                                                        </connections>
+                                                    </collectionViewCell>
+                                                </cells>
+                                            </collectionView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-dsf-01">
+                                                <rect key="frame" x="0.0" y="342" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-daf-01">
+                                                <rect key="frame" x="0.0" y="350" width="353" height="46"/>
+                                                <state key="normal" title="Agregar foto"/>
+                                                <connections>
+                                                    <action selector="agregarFotoTapped:" destination="PDV-00-001" eventType="touchUpInside" id="act-daf-01"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-dav-01">
+                                                <rect key="frame" x="0.0" y="404" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-dt-001">
+                                                <rect key="frame" x="166.5" y="412" width="20" height="20"/>
+                                            </activityIndicatorView>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <viewLayoutGuide key="contentLayoutGuide" id="clg-dt-001"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="flg-dt-001"/>
+                                <constraints>
+                                    <constraint firstItem="stk-dt-001" firstAttribute="leading" secondItem="clg-dt-001" secondAttribute="leading" constant="20" id="cst-ds-001"/>
+                                    <constraint firstItem="clg-dt-001" firstAttribute="trailing" secondItem="stk-dt-001" secondAttribute="trailing" constant="20" id="cst-ds-002"/>
+                                    <constraint firstItem="stk-dt-001" firstAttribute="top" secondItem="clg-dt-001" secondAttribute="top" constant="24" id="cst-ds-003"/>
+                                    <constraint firstItem="clg-dt-001" firstAttribute="bottom" secondItem="stk-dt-001" secondAttribute="bottom" constant="32" id="cst-ds-004"/>
+                                    <constraint firstItem="stk-dt-001" firstAttribute="width" secondItem="flg-dt-001" secondAttribute="width" constant="-40" id="cst-ds-005"/>
+                                </constraints>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="pdv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="scr-dt-001" firstAttribute="leading" secondItem="pdv-sa-001" secondAttribute="leading" id="cst-dt-101"/>
+                            <constraint firstItem="pdv-sa-001" firstAttribute="trailing" secondItem="scr-dt-001" secondAttribute="trailing" id="cst-dt-102"/>
+                            <constraint firstItem="scr-dt-001" firstAttribute="top" secondItem="pdv-sa-001" secondAttribute="top" id="cst-dt-103"/>
+                            <constraint firstItem="pdv-sa-001" firstAttribute="bottom" secondItem="scr-dt-001" secondAttribute="bottom" id="cst-dt-104"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="nvi-dt-001"/>
+                    <connections>
+                        <outlet property="activityIndicator" destination="act-dt-001" id="out-dt-001"/>
+                        <outlet property="agregarFotoButton" destination="btn-daf-01" id="out-dt-002"/>
+                        <outlet property="avisoFotosLabel" destination="lbl-dav-01" id="out-dt-003"/>
+                        <outlet property="categoriaLabel" destination="lbl-dc-001" id="out-dt-004"/>
+                        <outlet property="collectionView" destination="col-dt-001" id="out-dt-005"/>
+                        <outlet property="contadorFotosLabel" destination="lbl-dk-001" id="out-dt-006"/>
+                        <outlet property="contentStack" destination="stk-dt-001" id="out-dt-007"/>
+                        <outlet property="estadoLabel" destination="lbl-de-001" id="out-dt-008"/>
+                        <outlet property="fotosCaptionLabel" destination="lbl-df-001" id="out-dt-009"/>
+                        <outlet property="nombreLabel" destination="lbl-dn-001" id="out-dt-010"/>
+                        <outlet property="precioLabel" destination="lbl-dp-001" id="out-dt-011"/>
+                        <outlet property="proveedorLabel" destination="lbl-dv-001" id="out-dt-012"/>
+                        <outlet property="sinFotosLabel" destination="lbl-dsf-01" id="out-dt-013"/>
+                        <outlet property="stockLabel" destination="lbl-ds-001" id="out-dt-014"/>
+                        <segue destination="PFV-00-001" kind="show" identifier="irAFormularioProducto" id="sg-df-001"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pdv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1900" y="-2"/>
         </scene>
         <!--Inicio (tabs)-->
         <scene sceneID="tab-sc-001">
@@ -1003,8 +1180,36 @@
                                                 <nil key="highlightedColor"/>
                                                 <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
                                             </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Logo" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-flc-01">
+                                                <rect key="frame" x="0.0" y="298" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="img-flg-01">
+                                                <rect key="frame" x="0.0" y="320" width="353" height="96"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="96" id="cst-flg-01"/>
+                                                </constraints>
+                                            </imageView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-fls-01">
+                                                <rect key="frame" x="0.0" y="424" width="353" height="46"/>
+                                                <state key="normal" title="Subir logo"/>
+                                                <connections>
+                                                    <action selector="subirLogoTapped:" destination="VFV-00-001" eventType="touchUpInside" id="act-fls-01"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fla-01">
+                                                <rect key="frame" x="0.0" y="478" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-flg-01">
+                                                <rect key="frame" x="166.5" y="486" width="20" height="20"/>
+                                            </activityIndicatorView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fve-01">
-                                                <rect key="frame" x="0.0" y="298" width="353" height="0.0"/>
+                                                <rect key="frame" x="0.0" y="514" width="353" height="0.0"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -1052,6 +1257,11 @@
                         <outlet property="errorLabel" destination="lbl-fvr-01" id="out-vf-004"/>
                         <outlet property="estadoLabel" destination="lbl-fve-01" id="out-vf-005"/>
                         <outlet property="guardarButton" destination="btn-fvg-01" id="out-vf-006"/>
+                        <outlet property="avisoLogoLabel" destination="lbl-fla-01" id="out-vf-011"/>
+                        <outlet property="logoActivityIndicator" destination="act-flg-01" id="out-vf-012"/>
+                        <outlet property="logoCaptionLabel" destination="lbl-flc-01" id="out-vf-013"/>
+                        <outlet property="logoImageView" destination="img-flg-01" id="out-vf-014"/>
+                        <outlet property="subirLogoButton" destination="btn-fls-01" id="out-vf-015"/>
                         <outlet property="nombreCaptionLabel" destination="lbl-fvn-01" id="out-vf-007"/>
                         <outlet property="nombreField" destination="txt-fvn-01" id="out-vf-008"/>
                         <outlet property="telefonoCaptionLabel" destination="lbl-fvt-01" id="out-vf-009"/>

@@ -1,4 +1,5 @@
 import UIKit
+import PhotosUI
 
 final class ProveedorFormViewController: UIViewController {
 
@@ -10,6 +11,12 @@ final class ProveedorFormViewController: UIViewController {
     @IBOutlet weak var telefonoField: PaddedTextField!
     @IBOutlet weak var direccionCaptionLabel: UILabel!
     @IBOutlet weak var direccionField: PaddedTextField!
+
+    @IBOutlet weak var logoCaptionLabel: UILabel!
+    @IBOutlet weak var logoImageView: UIImageView!
+    @IBOutlet weak var subirLogoButton: UIButton!
+    @IBOutlet weak var avisoLogoLabel: UILabel!
+    @IBOutlet weak var logoActivityIndicator: UIActivityIndicatorView!
 
     @IBOutlet weak var estadoLabel: UILabel!
     @IBOutlet weak var errorLabel: UILabel!
@@ -30,7 +37,30 @@ final class ProveedorFormViewController: UIViewController {
         title = viewModel.titulo
         aplicarEstilos()
         configurarEspaciados()
+        bindViewModel()
         cargarDatos()
+    }
+
+    private func bindViewModel() {
+        viewModel.onLogoCambio = { [weak self] in
+            self?.actualizarLogo()
+        }
+
+        viewModel.onError = { [weak self] mensaje in
+            let alert = UIAlertController(title: "No se pudo subir el logo", message: mensaje, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Entendido", style: .default))
+            self?.present(alert, animated: true)
+        }
+
+        viewModel.onLoadingChanged = { [weak self] cargando in
+            guard let self else { return }
+            self.subirLogoButton.isEnabled = !cargando
+            if cargando {
+                self.logoActivityIndicator.startAnimating()
+            } else {
+                self.logoActivityIndicator.stopAnimating()
+            }
+        }
     }
 
     // MARK: - Estilos
@@ -47,6 +77,14 @@ final class ProveedorFormViewController: UIViewController {
         direccionField.aplicarEstiloDeCampo(placeholder: "Opcional")
         [nombreField, telefonoField, direccionField].forEach { $0?.delegate = self }
         telefonoField.keyboardType = .phonePad
+
+        logoCaptionLabel.aplicar(.labelLG, color: Theme.Color.charcoalMuted, texto: "Logo")
+        logoImageView.contentMode = .scaleAspectFill
+        logoImageView.clipsToBounds = true
+        logoImageView.backgroundColor = Theme.Color.surfaceTonal
+        logoImageView.aplicarBorde(radio: Theme.Radius.base)
+        logoActivityIndicator.hidesWhenStopped = true
+        subirLogoButton.aplicarEstiloPrimario(titulo: "Subir logo")
 
         guardarButton.aplicarEstiloPrimario(titulo: "Guardar")
 
@@ -67,6 +105,10 @@ final class ProveedorFormViewController: UIViewController {
             (telefonoField, Theme.Spacing.md),
             (direccionCaptionLabel, Theme.Spacing.unit),
             (direccionField, Theme.Spacing.lg),
+            (logoCaptionLabel, Theme.Spacing.unit),
+            (logoImageView, Theme.Spacing.xs),
+            (subirLogoButton, Theme.Spacing.xs),
+            (avisoLogoLabel, Theme.Spacing.lg),
             (estadoLabel, Theme.Spacing.xs),
             (errorLabel, Theme.Spacing.sm)
         ]
@@ -84,6 +126,28 @@ final class ProveedorFormViewController: UIViewController {
             direccionField.text = proveedor.direccion
         }
         actualizarEstado()
+        actualizarLogo()
+    }
+
+    /// El logo vive en Cloudinary y solo existe si el proveedor ya se sincronizo;
+    /// mientras no se pueda subir, se explica por que en vez de dejar un boton
+    /// que va a fallar.
+    private func actualizarLogo() {
+        let motivo = viewModel.motivoParaNoSubirLogo
+        subirLogoButton.isHidden = (motivo != nil)
+        avisoLogoLabel.isHidden = (motivo == nil)
+        avisoLogoLabel.aplicar(.bodyMD, color: Theme.Color.charcoalMuted, texto: motivo)
+
+        guard let url = viewModel.logoUrl, !url.isEmpty else {
+            logoImageView.isHidden = true
+            return
+        }
+
+        logoImageView.isHidden = false
+        subirLogoButton.aplicarEstiloPrimario(titulo: "Cambiar logo")
+        DescargadorDeImagenes.shared.descargar(url) { [weak self] imagen in
+            self?.logoImageView.image = imagen
+        }
     }
 
     private func actualizarEstado() {
@@ -123,8 +187,40 @@ final class ProveedorFormViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
+    @IBAction func subirLogoTapped(_ sender: UIButton) {
+        cerrarTeclado()
+
+        var configuracion = PHPickerConfiguration()
+        configuracion.filter = .images
+        configuracion.selectionLimit = 1
+
+        let selector = PHPickerViewController(configuration: configuracion)
+        selector.delegate = self
+        present(selector, animated: true)
+    }
+
     @objc private func cerrarTeclado() {
         view.endEditing(true)
+    }
+}
+
+// MARK: - PHPickerViewControllerDelegate
+
+extension ProveedorFormViewController: PHPickerViewControllerDelegate {
+
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+
+        guard let proveedorDeItem = results.first?.itemProvider,
+              proveedorDeItem.canLoadObject(ofClass: UIImage.self) else { return }
+
+        proveedorDeItem.loadObject(ofClass: UIImage.self) { [weak self] objeto, _ in
+            guard let imagen = objeto as? UIImage else { return }
+            // `loadObject` contesta en una cola de fondo.
+            DispatchQueue.main.async {
+                self?.viewModel.subirLogo(imagen)
+            }
+        }
     }
 }
 

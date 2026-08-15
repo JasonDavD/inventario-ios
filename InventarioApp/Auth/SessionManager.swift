@@ -64,6 +64,11 @@ final class SessionManager {
     /// PLAN.md). Las pantallas esconden las acciones de escritura si no lo es.
     var esAdmin: Bool { hasRole("ADMIN") }
 
+    /// Crear/editar productos y manejar sus imagenes es de OPERADOR para arriba.
+    /// Se chequean los dos roles y no solo OPERADOR: no hay garantia de que el
+    /// backend le agregue OPERADOR a un ADMIN en el token.
+    var puedeEditarProductos: Bool { esAdmin || hasRole("OPERADOR") }
+
     private static func sinPrefijo(_ role: String) -> String {
         let mayusculas = role.uppercased()
         return mayusculas.hasPrefix("ROLE_") ? String(mayusculas.dropFirst(5)) : mayusculas

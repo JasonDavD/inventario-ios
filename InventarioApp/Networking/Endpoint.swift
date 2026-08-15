@@ -15,6 +15,11 @@ enum Endpoint {
     case categoria(apiId: Int64)
     case proveedores
     case proveedor(apiId: Int64)
+    /// Coleccion de imagenes de un producto: POST para subir una nueva.
+    case imagenesDeProducto(apiId: Int64)
+    /// Una imagen concreta: DELETE para sacarla.
+    case imagenDeProducto(apiId: Int64, imagenId: Int64)
+    case logoDeProveedor(apiId: Int64)
 
     var url: URL {
         let path: String
@@ -33,6 +38,12 @@ enum Endpoint {
             path = "/api/proveedores"
         case .proveedor(let apiId):
             path = "/api/proveedores/\(apiId)"
+        case .imagenesDeProducto(let apiId):
+            path = "/api/productos/\(apiId)/imagenes"
+        case .imagenDeProducto(let apiId, let imagenId):
+            path = "/api/productos/\(apiId)/imagenes/\(imagenId)"
+        case .logoDeProveedor(let apiId):
+            path = "/api/proveedores/\(apiId)/logo"
         }
         return URL(string: Endpoint.baseURL.absoluteString + path)!
     }

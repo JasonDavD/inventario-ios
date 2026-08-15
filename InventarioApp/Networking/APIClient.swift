@@ -5,6 +5,17 @@ import Foundation
 /// fallaria con un error de decoding aunque la operacion haya salido bien.
 struct RespuestaVacia: Decodable {}
 
+/// Respuesta cuyo contenido no interesa: la operacion se confirma por el status
+/// HTTP y el estado real se vuelve a bajar del servidor despues.
+///
+/// Se usa en la subida de imagenes. No hay una copia del backend al lado para
+/// saber si `POST /api/productos/{id}/imagenes` devuelve la imagen creada, el
+/// producto entero o una lista, y atarse a una de esas formas seria adivinar: un
+/// `init(from:)` vacio decodifica cualquiera de las tres sin fallar.
+struct RespuestaIgnorada: Decodable {
+    init(from decoder: Decoder) throws {}
+}
+
 final class APIClient {
     static let shared = APIClient()
 
@@ -76,6 +87,64 @@ final class APIClient {
         request.httpMethod = "DELETE"
         attachAuthIfNeeded(&request, authenticated: authenticated)
         send(request, authenticated: authenticated, completion: completion)
+    }
+
+    /// Sube un archivo como `multipart/form-data`.
+    ///
+    /// Es el unico camino para las imagenes: el backend las recibe en un campo
+    /// de formulario (`archivo`), no como JSON. Por eso no reusa
+    /// `enviarConCuerpo`, que siempre serializa a JSON.
+    ///
+    /// - Parameter campo: nombre del campo del formulario. El backend usa
+    ///   `archivo` tanto para las imagenes de producto como para el logo de
+    ///   proveedor (ver el contrato en PLAN.md).
+    func upload<Response: Decodable>(
+        _ endpoint: Endpoint,
+        archivo: Data,
+        nombreArchivo: String,
+        mimeType: String,
+        campo: String = "archivo",
+        completion: @escaping (Result<Response, APIError>) -> Void
+    ) {
+        let frontera = "Boundary-\(UUID().uuidString)"
+
+        var request = URLRequest(url: endpoint.url)
+        request.httpMethod = "POST"
+        request.setValue("multipart/form-data; boundary=\(frontera)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = Self.cuerpoMultipart(
+            archivo: archivo,
+            nombreArchivo: nombreArchivo,
+            mimeType: mimeType,
+            campo: campo,
+            frontera: frontera
+        )
+        attachAuthIfNeeded(&request, authenticated: true)
+        send(request, authenticated: true, completion: completion)
+    }
+
+    /// Arma el cuerpo multipart a mano. El formato es sensible a los saltos de
+    /// linea: van CRLF (`\r\n`) y no `\n`, y la ultima frontera lleva `--` al
+    /// final. Un solo salto de linea mal puesto hace que el servidor no
+    /// encuentre el archivo y conteste 400 sin explicar por que.
+    private static func cuerpoMultipart(
+        archivo: Data,
+        nombreArchivo: String,
+        mimeType: String,
+        campo: String,
+        frontera: String
+    ) -> Data {
+        var cuerpo = Data()
+        let salto = "\r\n"
+
+        cuerpo.append("--\(frontera)\(salto)")
+        cuerpo.append("Content-Disposition: form-data; name=\"\(campo)\"; filename=\"\(nombreArchivo)\"\(salto)")
+        cuerpo.append("Content-Type: \(mimeType)\(salto)")
+        cuerpo.append(salto)
+        cuerpo.append(archivo)
+        cuerpo.append(salto)
+        cuerpo.append("--\(frontera)--\(salto)")
+
+        return cuerpo
     }
 
     // MARK: - Interno
@@ -159,4 +228,13 @@ final class APIClient {
 
 private struct BackendErrorBody: Decodable {
     let mensaje: String?
+}
+
+private extension Data {
+    /// Append de texto en UTF-8. El cuerpo multipart mezcla texto y bytes
+    /// crudos, asi que se arma sobre `Data` y no sobre `String`.
+    mutating func append(_ texto: String) {
+        guard let datos = texto.data(using: .utf8) else { return }
+        append(datos)
+    }
 }

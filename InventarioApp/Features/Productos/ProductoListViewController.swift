@@ -64,7 +64,12 @@ final class ProductoListViewController: UIViewController {
     /// El "+" se agrega por codigo y no en el Storyboard: el editor visual no
     /// deja poner dos items a la derecha sin pelear con el XML, y esto es una
     /// linea.
+    ///
+    /// Solo aparece de OPERADOR para arriba, igual que en las otras dos listas:
+    /// sin el rol, el formulario dejaria guardar en Core Data algo que el
+    /// servidor rechaza con 403 al sincronizar.
     private func configurarBotonNuevo() {
+        guard SessionManager.shared.puedeEditarProductos else { return }
         let nuevo = UIBarButtonItem(
             image: UIImage(systemName: "plus"),
             style: .plain,
@@ -136,11 +141,18 @@ final class ProductoListViewController: UIViewController {
         performSegue(withIdentifier: "irAFormularioProducto", sender: nil)
     }
 
-    /// `sender` nil = alta; con un `ProductoEntity` = edicion.
+    /// Dos destinos: el "+" va derecho al formulario en modo alta, y tocar una
+    /// fila va al detalle, que es desde donde se edita y se manejan las fotos.
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard segue.identifier == "irAFormularioProducto",
-              let destino = segue.destination as? ProductoFormViewController else { return }
-        destino.configurar(con: sender as? ProductoEntity)
+        switch segue.identifier {
+        case "irAFormularioProducto":
+            (segue.destination as? ProductoFormViewController)?.configurar(con: nil)
+        case "irADetalleProducto":
+            guard let producto = sender as? ProductoEntity else { return }
+            (segue.destination as? ProductoDetailViewController)?.configurar(con: producto)
+        default:
+            break
+        }
     }
 
     private func mostrarError(_ mensaje: String) {
@@ -179,14 +191,17 @@ extension ProductoListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // Fase 5 mete el detalle en el medio; por ahora se va derecho a editar.
-        performSegue(withIdentifier: "irAFormularioProducto", sender: viewModel.productos[indexPath.row])
+        performSegue(withIdentifier: "irADetalleProducto", sender: viewModel.productos[indexPath.row])
     }
 
     func tableView(
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
+        // Borrar productos es de ADMIN, no de OPERADOR: es el unico verbo de la
+        // tabla de roles de PLAN.md que pide mas que editar.
+        guard SessionManager.shared.esAdmin else { return nil }
+
         let eliminar = UIContextualAction(style: .destructive, title: "Eliminar") { [weak self] _, _, listo in
             self?.confirmarEliminacion(en: indexPath)
             listo(true)

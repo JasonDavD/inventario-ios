@@ -148,7 +148,7 @@ extension CategoriaListViewController: UITableViewDataSource {
         celdaCatalogo.configurar(
             nombre: categoria.nombre,
             detalle: categoria.descripcion,
-            pendiente: categoria.estadoSync == 0
+            chip: categoria.estadoSync == 0 ? .pendiente : nil
         )
         return celdaCatalogo
     }

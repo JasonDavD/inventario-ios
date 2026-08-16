@@ -20,6 +20,9 @@ enum Endpoint {
     /// Una imagen concreta: DELETE para sacarla.
     case imagenDeProducto(apiId: Int64, imagenId: Int64)
     case logoDeProveedor(apiId: Int64)
+    /// ABM de usuarios. Todo el prefijo pide rol ADMIN en el backend.
+    case usuarios
+    case usuario(id: Int64)
 
     var url: URL {
         let path: String
@@ -44,6 +47,10 @@ enum Endpoint {
             path = "/api/productos/\(apiId)/imagenes/\(imagenId)"
         case .logoDeProveedor(let apiId):
             path = "/api/proveedores/\(apiId)/logo"
+        case .usuarios:
+            path = "/api/usuarios"
+        case .usuario(let id):
+            path = "/api/usuarios/\(id)"
         }
         return URL(string: Endpoint.baseURL.absoluteString + path)!
     }

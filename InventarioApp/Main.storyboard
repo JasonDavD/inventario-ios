@@ -383,11 +383,6 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Productos" id="nvi-00-001">
-                        <barButtonItem key="leftBarButtonItem" title="Salir" id="bbi-sl-001">
-                            <connections>
-                                <action selector="salirTapped:" destination="PLV-00-001" id="act-sl-001"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Sincronizar" id="bbi-sy-001">
                             <connections>
                                 <action selector="sincronizarTapped:" destination="PLV-00-001" id="act-sy-001"/>
@@ -397,7 +392,6 @@
                     <connections>
                         <outlet property="activityIndicator" destination="act-pl-001" id="out-pv-001"/>
                         <outlet property="emptyLabel" destination="lbl-em-001" id="out-pv-002"/>
-                        <outlet property="salirButton" destination="bbi-sl-001" id="out-pv-003"/>
                         <outlet property="sincronizarButton" destination="bbi-sy-001" id="out-pv-004"/>
                         <outlet property="tableView" destination="tbl-00-001" id="out-pv-005"/>
                         <segue destination="PFV-00-001" kind="show" identifier="irAFormularioProducto" id="sg-fm-001"/>
@@ -753,6 +747,7 @@
                         <segue destination="NAV-00-001" kind="relationship" relationship="viewControllers" id="sg-tb-001"/>
                         <segue destination="NAV-CT-001" kind="relationship" relationship="viewControllers" id="sg-tb-002"/>
                         <segue destination="NAV-PV-001" kind="relationship" relationship="viewControllers" id="sg-tb-003"/>
+                        <segue destination="NAV-CU-001" kind="relationship" relationship="viewControllers" id="sg-tb-004"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tab-fr-001" sceneMemberID="firstResponder"/>
@@ -1272,9 +1267,279 @@
             </objects>
             <point key="canvasLocation" x="1500" y="-1120"/>
         </scene>
+        <!--Navigation Controller (Cuenta)-->
+        <scene sceneID="ncu-sc-001">
+            <objects>
+                <navigationController id="NAV-CU-001" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Cuenta" image="person.crop.circle" catalog="system" id="tbi-cu-001"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nbr-cu-001">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="CUV-00-001" kind="relationship" relationship="rootViewController" id="sg-rt-004"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ncu-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="700" y="-1680"/>
+        </scene>
+        <!--Cuenta-->
+        <scene sceneID="cue-sc-001">
+            <objects>
+                <viewController id="CUV-00-001" customClass="CuentaViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="cuv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="insetGrouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="60" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="tbl-cu-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="cuv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="tbl-cu-001" firstAttribute="leading" secondItem="cuv-vw-001" secondAttribute="leading" id="cst-cu-001"/>
+                            <constraint firstAttribute="trailing" secondItem="tbl-cu-001" secondAttribute="trailing" id="cst-cu-002"/>
+                            <constraint firstItem="tbl-cu-001" firstAttribute="top" secondItem="cuv-vw-001" secondAttribute="top" id="cst-cu-003"/>
+                            <constraint firstAttribute="bottom" secondItem="tbl-cu-001" secondAttribute="bottom" id="cst-cu-004"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Cuenta" id="nvi-cu-001"/>
+                    <connections>
+                        <outlet property="tableView" destination="tbl-cu-001" id="out-cu-001"/>
+                        <segue destination="ULV-00-001" kind="show" identifier="irAUsuarios" id="sg-cu-001"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cuv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1100" y="-1680"/>
+        </scene>
+        <!--Usuarios-->
+        <scene sceneID="uls-sc-001">
+            <objects>
+                <viewController id="ULV-00-001" customClass="UsuarioListViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ulv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="72" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="tbl-us-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CatalogoCell" rowHeight="72" id="cel-us-001" customClass="CatalogoTableViewCell" customModule="InventarioApp" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cel-us-001" id="cnt-us-001">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Usuario" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-un-001">
+                                                    <rect key="frame" x="20" y="14" width="200" height="24"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Roles" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ud-001">
+                                                    <rect key="frame" x="20" y="42" width="200" height="20"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chp-up-001">
+                                                    <rect key="frame" x="281" y="24" width="92" height="24"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="INACTIVO" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-up-001">
+                                                            <rect key="frame" x="8" y="4" width="76" height="16"/>
+                                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="lbl-up-001" firstAttribute="leading" secondItem="chp-up-001" secondAttribute="leading" constant="8" id="cst-uc-001"/>
+                                                        <constraint firstAttribute="trailing" secondItem="lbl-up-001" secondAttribute="trailing" constant="8" id="cst-uc-002"/>
+                                                        <constraint firstItem="lbl-up-001" firstAttribute="top" secondItem="chp-up-001" secondAttribute="top" constant="4" id="cst-uc-003"/>
+                                                        <constraint firstAttribute="bottom" secondItem="lbl-up-001" secondAttribute="bottom" constant="4" id="cst-uc-004"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="lbl-un-001" firstAttribute="leading" secondItem="cnt-us-001" secondAttribute="leading" constant="20" id="cst-ux-001"/>
+                                                <constraint firstItem="lbl-un-001" firstAttribute="top" secondItem="cnt-us-001" secondAttribute="top" constant="14" id="cst-ux-002"/>
+                                                <constraint firstItem="lbl-ud-001" firstAttribute="leading" secondItem="cnt-us-001" secondAttribute="leading" constant="20" id="cst-ux-003"/>
+                                                <constraint firstItem="lbl-ud-001" firstAttribute="top" secondItem="lbl-un-001" secondAttribute="bottom" constant="4" id="cst-ux-004"/>
+                                                <constraint firstAttribute="bottom" secondItem="lbl-ud-001" secondAttribute="bottom" constant="14" id="cst-ux-005"/>
+                                                <constraint firstItem="chp-up-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lbl-un-001" secondAttribute="trailing" constant="12" id="cst-ux-006"/>
+                                                <constraint firstItem="chp-up-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lbl-ud-001" secondAttribute="trailing" constant="12" id="cst-ux-007"/>
+                                                <constraint firstAttribute="trailing" secondItem="chp-up-001" secondAttribute="trailing" constant="20" id="cst-ux-008"/>
+                                                <constraint firstItem="chp-up-001" firstAttribute="centerY" secondItem="cnt-us-001" secondAttribute="centerY" id="cst-ux-009"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="detalleLabel" destination="lbl-ud-001" id="out-uc-001"/>
+                                            <outlet property="nombreLabel" destination="lbl-un-001" id="out-uc-002"/>
+                                            <outlet property="pendienteChipView" destination="chp-up-001" id="out-uc-003"/>
+                                            <outlet property="pendienteLabel" destination="lbl-up-001" id="out-uc-004"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-ue-001">
+                                <rect key="frame" x="40" y="360" width="313" height="40"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-us-001">
+                                <rect key="frame" x="186.5" y="310" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="ulv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="tbl-us-001" firstAttribute="leading" secondItem="ulv-vw-001" secondAttribute="leading" id="cst-uv-001"/>
+                            <constraint firstAttribute="trailing" secondItem="tbl-us-001" secondAttribute="trailing" id="cst-uv-002"/>
+                            <constraint firstItem="tbl-us-001" firstAttribute="top" secondItem="ulv-vw-001" secondAttribute="top" id="cst-uv-003"/>
+                            <constraint firstAttribute="bottom" secondItem="tbl-us-001" secondAttribute="bottom" id="cst-uv-004"/>
+                            <constraint firstItem="lbl-ue-001" firstAttribute="leading" secondItem="ulv-sa-001" secondAttribute="leading" constant="40" id="cst-uv-005"/>
+                            <constraint firstItem="ulv-sa-001" firstAttribute="trailing" secondItem="lbl-ue-001" secondAttribute="trailing" constant="40" id="cst-uv-006"/>
+                            <constraint firstItem="lbl-ue-001" firstAttribute="centerY" secondItem="ulv-vw-001" secondAttribute="centerY" id="cst-uv-007"/>
+                            <constraint firstItem="act-us-001" firstAttribute="centerX" secondItem="ulv-vw-001" secondAttribute="centerX" id="cst-uv-008"/>
+                            <constraint firstItem="lbl-ue-001" firstAttribute="top" secondItem="act-us-001" secondAttribute="bottom" constant="30" id="cst-uv-009"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Usuarios" id="nvi-us-001"/>
+                    <connections>
+                        <outlet property="activityIndicator" destination="act-us-001" id="out-uv-001"/>
+                        <outlet property="emptyLabel" destination="lbl-ue-001" id="out-uv-002"/>
+                        <outlet property="tableView" destination="tbl-us-001" id="out-uv-003"/>
+                        <segue destination="UFV-00-001" kind="show" identifier="irAFormularioUsuario" id="sg-uf-001"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ulv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1500" y="-1680"/>
+        </scene>
+        <!--Formulario de usuario-->
+        <scene sceneID="ufm-sc-001">
+            <objects>
+                <viewController id="UFV-00-001" customClass="UsuarioFormViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ufv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="scr-uf-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="fill" translatesAutoresizingMaskIntoConstraints="NO" id="stk-uf-001">
+                                        <rect key="frame" x="20" y="24" width="353" height="560"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Usuario" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fun-01">
+                                                <rect key="frame" x="0.0" y="0.0" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fun-01" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="22" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fun-01"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Contraseña" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fup-01">
+                                                <rect key="frame" x="0.0" y="94" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="txt-fup-01" customClass="PaddedTextField" customModule="InventarioApp" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="116" width="353" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="cst-fup-01"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" secureTextEntry="YES" returnKeyType="done"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fua-01">
+                                                <rect key="frame" x="0.0" y="172" width="353" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Roles y estado" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fuo-01">
+                                                <rect key="frame" x="0.0" y="232" width="353" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="fill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="stk-uo-001">
+                                                <rect key="frame" x="0.0" y="266" width="353" height="0.0"/>
+                                            </stackView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-fur-01">
+                                                <rect key="frame" x="0.0" y="306" width="353" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btn-fug-01">
+                                                <rect key="frame" x="0.0" y="322" width="353" height="46"/>
+                                                <state key="normal" title="Guardar"/>
+                                                <connections>
+                                                    <action selector="guardarTapped:" destination="UFV-00-001" eventType="touchUpInside" id="act-fug-01"/>
+                                                </connections>
+                                            </button>
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-uf-001">
+                                                <rect key="frame" x="166.5" y="376" width="20" height="20"/>
+                                            </activityIndicatorView>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <viewLayoutGuide key="contentLayoutGuide" id="clg-uf-001"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="flg-uf-001"/>
+                                <constraints>
+                                    <constraint firstItem="stk-uf-001" firstAttribute="leading" secondItem="clg-uf-001" secondAttribute="leading" constant="20" id="cst-us-101"/>
+                                    <constraint firstItem="clg-uf-001" firstAttribute="trailing" secondItem="stk-uf-001" secondAttribute="trailing" constant="20" id="cst-us-102"/>
+                                    <constraint firstItem="stk-uf-001" firstAttribute="top" secondItem="clg-uf-001" secondAttribute="top" constant="24" id="cst-us-103"/>
+                                    <constraint firstItem="clg-uf-001" firstAttribute="bottom" secondItem="stk-uf-001" secondAttribute="bottom" constant="32" id="cst-us-104"/>
+                                    <constraint firstItem="stk-uf-001" firstAttribute="width" secondItem="flg-uf-001" secondAttribute="width" constant="-40" id="cst-us-105"/>
+                                </constraints>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="ufv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="scr-uf-001" firstAttribute="leading" secondItem="ufv-sa-001" secondAttribute="leading" id="cst-uf-101"/>
+                            <constraint firstItem="ufv-sa-001" firstAttribute="trailing" secondItem="scr-uf-001" secondAttribute="trailing" id="cst-uf-102"/>
+                            <constraint firstItem="scr-uf-001" firstAttribute="top" secondItem="ufv-sa-001" secondAttribute="top" id="cst-uf-103"/>
+                            <constraint firstItem="ufv-sa-001" firstAttribute="bottom" secondItem="scr-uf-001" secondAttribute="bottom" id="cst-uf-104"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="nvi-uf-001"/>
+                    <connections>
+                        <outlet property="activityIndicator" destination="act-uf-001" id="out-uf-101"/>
+                        <outlet property="contentStack" destination="stk-uf-001" id="out-uf-102"/>
+                        <outlet property="errorLabel" destination="lbl-fur-01" id="out-uf-103"/>
+                        <outlet property="guardarButton" destination="btn-fug-01" id="out-uf-104"/>
+                        <outlet property="opcionesCaptionLabel" destination="lbl-fuo-01" id="out-uf-105"/>
+                        <outlet property="opcionesStack" destination="stk-uo-001" id="out-uf-106"/>
+                        <outlet property="passwordAyudaLabel" destination="lbl-fua-01" id="out-uf-107"/>
+                        <outlet property="passwordCaptionLabel" destination="lbl-fup-01" id="out-uf-108"/>
+                        <outlet property="passwordField" destination="txt-fup-01" id="out-uf-109"/>
+                        <outlet property="usernameCaptionLabel" destination="lbl-fun-01" id="out-uf-110"/>
+                        <outlet property="usernameField" destination="txt-fun-01" id="out-uf-111"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ufv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1900" y="-1680"/>
+        </scene>
     </scenes>
     <resources>
         <image name="building.2" catalog="system" width="128" height="86"/>
+        <image name="person.crop.circle" catalog="system" width="128" height="123"/>
         <image name="shippingbox" catalog="system" width="123" height="128"/>
         <image name="square.grid.2x2" catalog="system" width="128" height="119"/>
     </resources>

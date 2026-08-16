@@ -1,15 +1,13 @@
 import UIKit
 
-final class ProductoListViewController: UIViewController {
+final class UsuarioListViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var emptyLabel: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var sincronizarButton: UIBarButtonItem!
 
-    private let viewModel = ProductoListViewModel()
+    private let viewModel = UsuarioListViewModel()
     private let refreshControl = UIRefreshControl()
-    private var yaSincronizoAlEntrar = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,70 +15,47 @@ final class ProductoListViewController: UIViewController {
         configurarBotonNuevo()
         configurarTabla()
         bindViewModel()
-        viewModel.cargarLocales()
     }
 
-    /// Al volver del formulario hay que releer: el producto nuevo o editado ya
-    /// esta en Core Data.
+    /// Se recarga al aparecer y no solo una vez: esta pantalla no tiene copia
+    /// local, asi que volver del formulario tiene que ir a buscar de nuevo.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.cargarLocales()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // Sin datos locales la pantalla no muestra nada util, asi que la primera
-        // vez se sincroniza sola. Despues queda a pedido, para no gastar una
-        // request en cada entrada.
-        guard !yaSincronizoAlEntrar, viewModel.estaVacio else { return }
-        yaSincronizoAlEntrar = true
-        viewModel.sincronizar()
+        viewModel.cargar()
     }
 
     // MARK: - Configuracion
 
     private func aplicarEstilos() {
         view.backgroundColor = Theme.Color.surfaceContainerLowest
-
         tableView.aplicarEstiloDeLista()
-        aplicarAparienciaDeNavegacion(titulo: "Productos")
+        aplicarAparienciaDeNavegacion(titulo: "Usuarios")
 
         emptyLabel.aplicar(
             .bodyMD,
             color: Theme.Color.charcoalMuted,
-            texto: "Todavia no hay productos guardados.\nTocá Sincronizar para traerlos del servidor.",
+            texto: "No se pudieron traer los usuarios.\nRevisá la conexion y deslizá para reintentar.",
             alineacion: .center
         )
         emptyLabel.isHidden = true
-
         activityIndicator.hidesWhenStopped = true
-
-        sincronizarButton.aplicarEstiloDeTexto(color: Theme.Color.charcoalDeep)
     }
 
-    /// El "+" se agrega por codigo y no en el Storyboard: el editor visual no
-    /// deja poner dos items a la derecha sin pelear con el XML, y esto es una
-    /// linea.
-    ///
-    /// Solo aparece de OPERADOR para arriba, igual que en las otras dos listas:
-    /// sin el rol, el formulario dejaria guardar en Core Data algo que el
-    /// servidor rechaza con 403 al sincronizar.
     private func configurarBotonNuevo() {
-        guard SessionManager.shared.puedeEditarProductos else { return }
         let nuevo = UIBarButtonItem(
             image: UIImage(systemName: "plus"),
             style: .plain,
             target: self,
-            action: #selector(nuevoProductoTapped)
+            action: #selector(nuevoUsuarioTapped)
         )
         nuevo.tintColor = Theme.Color.charcoalDeep
-        navigationItem.rightBarButtonItems = [nuevo, sincronizarButton]
+        navigationItem.rightBarButtonItem = nuevo
     }
 
     private func configurarTabla() {
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.estimatedRowHeight = 84
+        tableView.estimatedRowHeight = 72
 
         refreshControl.addTarget(self, action: #selector(refrescar), for: .valueChanged)
         refreshControl.tintColor = Theme.Color.outline
@@ -95,12 +70,16 @@ final class ProductoListViewController: UIViewController {
         }
 
         viewModel.onError = { [weak self] mensaje in
-            self?.mostrarError(mensaje)
+            guard let self else { return }
+            // Sin copia local, un error deja la pantalla vacia: el estado vacio
+            // tiene que explicar que fue un problema de red y no que no haya
+            // usuarios.
+            self.emptyLabel.isHidden = !self.viewModel.estaVacio
+            self.mostrarAlerta(titulo: "No se pudo completar", mensaje: mensaje)
         }
 
         viewModel.onLoadingChanged = { [weak self] cargando in
             guard let self else { return }
-            self.sincronizarButton.isEnabled = !cargando
             if cargando {
                 self.activityIndicator.startAnimating()
             } else {
@@ -112,38 +91,23 @@ final class ProductoListViewController: UIViewController {
 
     // MARK: - Acciones
 
-    @IBAction func sincronizarTapped(_ sender: UIBarButtonItem) {
-        viewModel.sincronizar()
-    }
-
     @objc private func refrescar() {
-        viewModel.sincronizar()
+        viewModel.cargar()
     }
 
-    @objc private func nuevoProductoTapped() {
-        performSegue(withIdentifier: "irAFormularioProducto", sender: nil)
+    @objc private func nuevoUsuarioTapped() {
+        performSegue(withIdentifier: "irAFormularioUsuario", sender: nil)
     }
 
-    /// Dos destinos: el "+" va derecho al formulario en modo alta, y tocar una
-    /// fila va al detalle, que es desde donde se edita y se manejan las fotos.
+    /// `sender` nil = alta; con un `UsuarioDTO` = edicion.
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case "irAFormularioProducto":
-            (segue.destination as? ProductoFormViewController)?.configurar(con: nil)
-        case "irADetalleProducto":
-            guard let producto = sender as? ProductoEntity else { return }
-            (segue.destination as? ProductoDetailViewController)?.configurar(con: producto)
-        default:
-            break
-        }
+        guard segue.identifier == "irAFormularioUsuario",
+              let destino = segue.destination as? UsuarioFormViewController else { return }
+        destino.configurar(con: sender as? UsuarioDTO)
     }
 
-    private func mostrarError(_ mensaje: String) {
-        let alert = UIAlertController(
-            title: "No se pudo sincronizar",
-            message: mensaje,
-            preferredStyle: .alert
-        )
+    private func mostrarAlerta(titulo: String, mensaje: String) {
+        let alert = UIAlertController(title: titulo, message: mensaje, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Entendido", style: .default))
         present(alert, animated: true)
     }
@@ -151,39 +115,51 @@ final class ProductoListViewController: UIViewController {
 
 // MARK: - UITableViewDataSource
 
-extension ProductoListViewController: UITableViewDataSource {
+extension UsuarioListViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.productos.count
+        viewModel.usuarios.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let celda = tableView.dequeueReusableCell(
-            withIdentifier: ProductoTableViewCell.reuseIdentifier,
+            withIdentifier: CatalogoTableViewCell.reuseIdentifier,
             for: indexPath
         )
-        guard let celdaProducto = celda as? ProductoTableViewCell else { return celda }
-        celdaProducto.configurar(con: viewModel.productos[indexPath.row])
-        return celdaProducto
+        guard let celdaCatalogo = celda as? CatalogoTableViewCell else { return celda }
+
+        let usuario = viewModel.usuarios[indexPath.row]
+        celdaCatalogo.configurar(
+            nombre: usuario.username,
+            detalle: Self.detalle(de: usuario),
+            chip: usuario.enabled ? nil : .inactivo
+        )
+        return celdaCatalogo
+    }
+
+    private static func detalle(de usuario: UsuarioDTO) -> String {
+        let roles = usuario.roles
+            .compactMap { RolDisponible.desde($0)?.titulo }
+            .sorted()
+        return roles.isEmpty ? "Sin roles asignados" : roles.joined(separator: " · ")
     }
 }
 
 // MARK: - UITableViewDelegate
 
-extension ProductoListViewController: UITableViewDelegate {
+extension UsuarioListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        performSegue(withIdentifier: "irADetalleProducto", sender: viewModel.productos[indexPath.row])
+        performSegue(withIdentifier: "irAFormularioUsuario", sender: viewModel.usuarios[indexPath.row])
     }
 
     func tableView(
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
-        // Borrar productos es de ADMIN, no de OPERADOR: es el unico verbo de la
-        // tabla de roles de PLAN.md que pide mas que editar.
-        guard SessionManager.shared.esAdmin else { return nil }
+        // El usuario de la sesion no se puede borrar a si mismo.
+        guard !viewModel.esElUsuarioDeLaSesion(viewModel.usuarios[indexPath.row]) else { return nil }
 
         let eliminar = UIContextualAction(style: .destructive, title: "Eliminar") { [weak self] _, _, listo in
             self?.confirmarEliminacion(en: indexPath)
@@ -194,10 +170,10 @@ extension ProductoListViewController: UITableViewDelegate {
     }
 
     private func confirmarEliminacion(en indexPath: IndexPath) {
-        let producto = viewModel.productos[indexPath.row]
+        let usuario = viewModel.usuarios[indexPath.row]
         let alert = UIAlertController(
-            title: "Eliminar producto",
-            message: "\(producto.nombre ?? "Este producto") se va a borrar del servidor en la proxima sincronizacion.",
+            title: "Eliminar usuario",
+            message: "\(usuario.username) no va a poder entrar mas. Se borra del servidor ahora mismo y no se puede deshacer.",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))

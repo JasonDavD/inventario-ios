@@ -144,7 +144,7 @@ extension ProveedorListViewController: UITableViewDataSource {
         celdaCatalogo.configurar(
             nombre: proveedor.nombre,
             detalle: Self.detalle(de: proveedor),
-            pendiente: proveedor.estadoSync == 0
+            chip: proveedor.estadoSync == 0 ? .pendiente : nil
         )
         return celdaCatalogo
     }

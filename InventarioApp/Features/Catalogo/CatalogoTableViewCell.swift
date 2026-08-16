@@ -17,20 +17,45 @@ final class CatalogoTableViewCell: UITableViewCell {
     @IBOutlet weak var pendienteChipView: UIView!
     @IBOutlet weak var pendienteLabel: UILabel!
 
+    /// Estados que la celda sabe marcar. Es un enum cerrado y no un texto libre
+    /// para que los chips no se multipliquen en colores y mayusculas distintas
+    /// segun la pantalla.
+    enum Chip {
+        /// Cambio local que todavia no llego al servidor.
+        case pendiente
+        /// Usuario con `enabled = false`: existe pero no puede entrar.
+        case inactivo
+
+        var texto: String {
+            switch self {
+            case .pendiente: return "PENDIENTE"
+            case .inactivo: return "INACTIVO"
+            }
+        }
+
+        /// El DESIGN.md reserva el naranja para indicadores de estado; el gris
+        /// de `outline` alcanza para algo que no reclama accion.
+        var color: UIColor {
+            switch self {
+            case .pendiente: return Theme.Color.industrialOrange
+            case .inactivo: return Theme.Color.outline
+            }
+        }
+    }
+
     override func awakeFromNib() {
         super.awakeFromNib()
         backgroundColor = Theme.Color.surfaceContainerLowest
 
         pendienteChipView.layer.cornerRadius = Theme.Radius.base
         pendienteChipView.layer.cornerCurve = .continuous
-        pendienteChipView.backgroundColor = Theme.Color.industrialOrange.withAlphaComponent(0.12)
 
         let fondoSeleccion = UIView()
         fondoSeleccion.backgroundColor = Theme.Color.surfaceTonal
         selectedBackgroundView = fondoSeleccion
     }
 
-    func configurar(nombre: String?, detalle: String?, pendiente: Bool) {
+    func configurar(nombre: String?, detalle: String?, chip: Chip?) {
         nombreLabel.aplicar(
             .bodyLG,
             color: Theme.Color.charcoalDeep,
@@ -44,12 +69,14 @@ final class CatalogoTableViewCell: UITableViewCell {
         detalleLabel.isHidden = !hayDetalle
         detalleLabel.aplicar(.bodyMD, color: Theme.Color.charcoalMuted, texto: detalleLimpio)
 
-        // Cambio local que todavia no llego al servidor.
-        pendienteChipView.isHidden = !pendiente
+        pendienteChipView.isHidden = (chip == nil)
+        guard let chip else { return }
+
+        pendienteChipView.backgroundColor = chip.color.withAlphaComponent(0.12)
         pendienteLabel.aplicar(
             .labelMD,
-            color: Theme.Color.industrialOrange,
-            texto: "PENDIENTE",
+            color: chip.color,
+            texto: chip.texto,
             alineacion: .center
         )
     }

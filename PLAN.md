@@ -331,6 +331,28 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 
 > **El titulo de la barra queda alineado a la izquierda en Categorias y Proveedores, y centrado en Productos.** No es un bug de la app: iOS 26 alinea el titulo al borde cuando la barra tiene lugar de sobra, y Productos queda centrado solo porque "Salir" le ocupa la izquierda. Se probaron y descartaron, en orden: `largeTitleDisplayMode = .never` (sin efecto), `prefersLargeTitles = false` (sin efecto) y un `titleView` propio — este ultimo **si se dibuja**, verificado pintandole el fondo, y respeta la tipografia del Theme, pero la barra lo alinea a la izquierda igual; centrarlo requeria un ancho fijo calculado a mano que se rompe al cambiar de pantalla o de cantidad de botones. Se dejo el comportamiento nativo. La salida limpia, si molesta, es darle a las tres listas la misma estructura de botones.
 
+## Fase 8 — Gestion de usuarios (seccion de administracion)
+
+**El backend ya tenia todo:** `UsuarioRestController` expone el CRUD completo en `/api/usuarios`, y `SecurityConfig` lo restringe con `hasRole("ADMIN")`. No hubo que tocar Spring. Se evaluo mover los usuarios a Firebase y se descarto (ver nota abajo).
+
+- [x] `Models/Auth/UsuarioDTO.swift`: `UsuarioDTO`, `UsuarioRequest` y el enum `RolDisponible` con los tres roles y que puede cada uno
+- [x] `Services/UsuarioService.swift`: CRUD **online**, sin Core Data (ver nota)
+- [x] `Features/Cuenta/CuentaViewController.swift`: la seccion, armada como indice y no como tablero — cada cosa administrable es una fila que empuja su pantalla. Muestra quien esta logueado y con que roles, que hasta ahora no se veia en ningun lado
+- [x] `Features/Usuarios/`: List + Form con sus ViewModels. Los switches de rol salen de `RolDisponible.allCases`
+- [x] Cuarto tab "Cuenta"; "Salir" se muda ahi desde la barra de Productos
+- [x] `CatalogoTableViewCell` generaliza el chip a un enum (`.pendiente` / `.inactivo`) para reusar la celda en usuarios
+- [x] Guardas contra dejarse afuera: no se puede borrar el usuario de la sesion, ni sacarse ADMIN, ni desactivarse a uno mismo
+- [x] **Funcional:** la lista trae los usuarios del servidor y el formulario valida usuario vacio, sin rol y sin contraseña en el alta
+- [ ] **Pendiente del usuario:** crear los usuarios OPERADOR y LECTOR. El agente no crea cuentas ni escribe contraseñas; el resto de la pantalla quedo verificado
+
+> **Efecto colateral: se emparejaron los titulos de la barra.** Al mudar "Salir" a Cuenta, las tres listas quedaron con la misma estructura de botones y el titulo se alinea igual en las tres. Era exactamente la salida que Fase 7 habia dejado anotada como "la limpia", y salio gratis.
+
+> **Por que usuarios NO es offline-first.** Es la unica parte de la app, junto con las imagenes, que va contra el servidor en el momento. Dos razones: dar de alta un usuario sin conexion no significa nada porque el backend hashea el password y valida que el `username` sea unico, y guardar usuarios en Core Data implicaria tener contraseñas en el SQLite del dispositivo. No hay `UsuarioEntity` ni nada de esto pasa por el `SyncManager`.
+
+> **Por que no Firebase.** Se evaluo mover los usuarios a Firebase Auth. Es posible, pero el backend seguiria necesitando su propio endpoint de ABM: los custom claims (donde irian los roles) solo se setean con el Admin SDK desde un entorno privilegiado, nunca desde la app — si la app pudiera, cualquiera se haria ADMIN. O sea, Firebase ahorra guardar contraseñas pero no ahorra el endpoint, y ademas obligaba a: reconfigurar Spring como resource server, rehacer `APIClient` para pedir un token fresco antes de cada request (el de Firebase dura 1h y lo rota el SDK), tirar buena parte de `KeychainService`/`SessionManager` y reimplementar "mantener sesion iniciada". Con el ABM ya hecho en el backend, el costo no compraba nada.
+
+> **El repo del backend ahora esta clonado al lado** (`../inventario-backend`), como pedia la seccion "Backend consumido". Sirvio para confirmar el contrato exacto del ABM y, de paso, que `CustomUserDetailsService` arma las authorities como `"ROLE_" + rol.name()` — o sea que la normalizacion del prefijo en `SessionManager.hasRole` era necesaria de verdad.
+
 ---
 
 ## Historial de decisiones

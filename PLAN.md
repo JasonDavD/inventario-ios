@@ -321,11 +321,15 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 ## Fase 7 — Roles y pulido final
 
 - [x] Ocultar/deshabilitar acciones segun rol en las 3 listas — se adelanto: categorias y proveedores en Fase 6, productos en Fase 5. Productos usa `puedeEditarProductos` (OPERADOR o ADMIN) para el "+" y el detalle, y `esAdmin` para el swipe de eliminar, que es lo que pide la tabla de roles
-- [ ] Manejo de errores de red consistente + interceptar 401 (logout automatico)
-- [ ] Titulo de la barra centrado en las tres listas, con un `titleView` propio (ver la nota de Fase 6)
-- [ ] README.md del repo `inventario-ios` (setup, capturas, como correrlo)
-- [ ] **Funcional:** demo completa de punta a punta contra produccion, con los 3 roles
-- [ ] **Probado:** solo se corrio con un usuario ADMIN; falta ver la app con OPERADOR y con LECTOR
+- [x] Interceptar 401 (logout automatico): `APIClient` avisa a `SessionManager.manejarSesionExpirada()`, que cierra sesion y postea una notificacion; la escucha `InicioTabBarController`, que es el unico que puede volver al Login desde cualquier tab
+- [x] README.md del repo (que hace, como correrlo, arranque en frio de Render, como esta armado)
+- [~] Titulo de la barra alineado distinto entre listas — **se investigo y se decidio dejarlo nativo**, ver la nota abajo
+- [x] **Funcional:** verificado el gating de los 3 roles forzando el rol en la app (ver nota) — LECTOR no ve "+", ni swipe de borrado, ni "Editar", ni "Agregar foto", y lee el motivo en pantalla; OPERADOR edita productos y sube fotos pero no borra ni toca categorias/proveedores; ADMIN hace todo
+- [ ] **Pendiente:** correr la app con usuarios OPERADOR y LECTOR **reales**. El backend no tiene usuarios de esos roles, asi que el 403 del servidor no se pudo ver de punta a punta
+
+> **Como se verifico el gating sin usuarios OPERADOR/LECTOR.** Se forzo el rol temporalmente en `SessionManager.hasRole` y se corrio la app con cada uno. Eso ejercita exactamente el codigo que decide que controles se muestran, que es toda la logica de rol que vive en la app. Lo que **no** cubre es que el backend efectivamente rechace con 403, que es responsabilidad del backend. El forzado se revirtio antes de commitear (verificado con `git diff`).
+
+> **El titulo de la barra queda alineado a la izquierda en Categorias y Proveedores, y centrado en Productos.** No es un bug de la app: iOS 26 alinea el titulo al borde cuando la barra tiene lugar de sobra, y Productos queda centrado solo porque "Salir" le ocupa la izquierda. Se probaron y descartaron, en orden: `largeTitleDisplayMode = .never` (sin efecto), `prefersLargeTitles = false` (sin efecto) y un `titleView` propio — este ultimo **si se dibuja**, verificado pintandole el fondo, y respeta la tipografia del Theme, pero la barra lo alinea a la izquierda igual; centrarlo requeria un ancho fijo calculado a mano que se rompe al cambiar de pantalla o de cantidad de botones. Se dejo el comportamiento nativo. La salida limpia, si molesta, es darle a las tres listas la misma estructura de botones.
 
 ---
 

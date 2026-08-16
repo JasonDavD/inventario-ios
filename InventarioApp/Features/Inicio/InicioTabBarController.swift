@@ -39,5 +39,37 @@ final class InicioTabBarController: UITabBarController {
 
         tabBar.standardAppearance = apariencia
         tabBar.scrollEdgeAppearance = apariencia
+
+        observarSesionExpirada()
+    }
+
+    // MARK: - Sesion expirada
+
+    /// Escucha aca y no en cada lista: este es el controlador que el Login
+    /// presento, asi que es el unico que puede volver atras de una sola vez, sin
+    /// importar en que tab o en que formulario este parado el usuario.
+    private func observarSesionExpirada() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(sesionExpirada),
+            name: SessionManager.sesionExpirada,
+            object: nil
+        )
+    }
+
+    @objc private func sesionExpirada() {
+        // Si hay un formulario o un selector abierto, el alert tiene que ir
+        // arriba de eso; `presentedViewController` es quien esta al frente.
+        let alFrente = presentedViewController ?? self
+
+        let alert = UIAlertController(
+            title: "Tu sesion expiro",
+            message: "Volvé a ingresar para seguir. Los datos descargados siguen guardados en el dispositivo.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Ingresar de nuevo", style: .default) { [weak self] _ in
+            self?.dismiss(animated: true)
+        })
+        alFrente.present(alert, animated: true)
     }
 }

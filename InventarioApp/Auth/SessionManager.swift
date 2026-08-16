@@ -42,6 +42,21 @@ final class SessionManager {
         }
     }
 
+    /// Se dispara cuando el backend contesta 401 a una request que iba con token:
+    /// el JWT vencio o dejo de ser valido. La escucha `InicioTabBarController`,
+    /// que es quien puede volver al Login.
+    static let sesionExpirada = Notification.Name("SessionManager.sesionExpirada")
+
+    /// Cierra la sesion y avisa a la UI. **El guard no es decorativo:** una
+    /// sincronizacion dispara varias requests seguidas y todas van a fallar con
+    /// 401 al vencer el token; sin el, se apilarian varios avisos encima del
+    /// mismo problema.
+    func manejarSesionExpirada() {
+        guard isAuthenticated else { return }
+        logout()
+        NotificationCenter.default.post(name: Self.sesionExpirada, object: nil)
+    }
+
     func logout() {
         keychain.deleteToken()
         defaults.removeObject(forKey: usernameKey)

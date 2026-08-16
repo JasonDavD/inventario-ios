@@ -42,10 +42,9 @@ final class ProductoListViewController: UIViewController {
 
     private func aplicarEstilos() {
         view.backgroundColor = Theme.Color.surfaceContainerLowest
-        title = "Productos"
 
         tableView.aplicarEstiloDeLista()
-        aplicarAparienciaDeNavegacion()
+        aplicarAparienciaDeNavegacion(titulo: "Productos")
 
         emptyLabel.aplicar(
             .bodyMD,

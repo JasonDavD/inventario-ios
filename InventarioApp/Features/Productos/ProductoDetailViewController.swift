@@ -49,8 +49,7 @@ final class ProductoDetailViewController: UIViewController {
 
     private func aplicarEstilos() {
         view.backgroundColor = Theme.Color.surface
-        title = "Detalle"
-        aplicarAparienciaDeNavegacion()
+        aplicarAparienciaDeNavegacion(titulo: "Detalle")
 
         fotosCaptionLabel.aplicar(.labelLG, color: Theme.Color.charcoalMuted, texto: "Fotos")
         collectionView.backgroundColor = .clear

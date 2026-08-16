@@ -199,7 +199,13 @@ final class APIClient {
                 // En el login (authenticated: false) significa credenciales malas, y
                 // ahi lo que sirve es el `mensaje` que manda el backend.
                 if httpResponse.statusCode == 401, authenticated {
-                    DispatchQueue.main.async { completion(.failure(.unauthorized)) }
+                    DispatchQueue.main.async {
+                        // El token vencio: se cierra la sesion antes de contestar,
+                        // asi la pantalla que recibe el error ya no puede seguir
+                        // operando con credenciales muertas.
+                        SessionManager.shared.manejarSesionExpirada()
+                        completion(.failure(.unauthorized))
+                    }
                     return
                 }
                 let mensaje = (try? JSONDecoder().decode(BackendErrorBody.self, from: data))?.mensaje

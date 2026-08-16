@@ -12,7 +12,12 @@ extension UIViewController {
     /// Barra de navegacion opaca sobre `surface-container-lowest`, con divisor
     /// de 1px en vez de sombra: el DESIGN.md marca profundidad con capas
     /// tonales, no con elevacion.
-    func aplicarAparienciaDeNavegacion() {
+    /// - Parameter titulo: se setea tambien en `title`, que es de donde sale el
+    ///   texto del boton "atras" de la pantalla siguiente. El `titleView` solo
+    ///   cambia lo que se dibuja en esta.
+    func aplicarAparienciaDeNavegacion(titulo: String) {
+        title = titulo
+
         let apariencia = UINavigationBarAppearance()
         apariencia.configureWithOpaqueBackground()
         apariencia.backgroundColor = Theme.Color.surfaceContainerLowest
@@ -21,18 +26,27 @@ extension UIViewController {
             .attributes(color: Theme.Color.charcoalDeep, alineacion: .center)
         navigationItem.standardAppearance = apariencia
         navigationItem.scrollEdgeAppearance = apariencia
-    }
 
-    // NOTA — el titulo no queda centrado en todas las pantallas. En iOS 26 la
-    // barra alinea el titulo a la izquierda y lo agranda cuando no hay boton a la
-    // izquierda: Productos queda centrado porque tiene "Salir", y Categorias y
-    // Proveedores no. Ese titulo grande ignora el `titleTextAttributes` de arriba,
-    // asi que tampoco toma la tipografia del Theme.
-    //
-    // Probado y descartado: `largeTitleDisplayMode = .never` y
-    // `prefersLargeTitles = false` no lo cambian — no es un large title clasico
-    // sino el layout nuevo de la barra. Se arregla con un `titleView` propio, que
-    // es lo que habria que hacer si el detalle molesta.
+        // NOTA — el titulo queda alineado a la izquierda en Categorias y
+        // Proveedores, y centrado en Productos. No es un bug de esta app: iOS 26
+        // alinea el titulo al borde cuando la barra tiene lugar de sobra, y
+        // Productos queda centrado solo porque el boton "Salir" le come el
+        // espacio de la izquierda.
+        //
+        // Probado y descartado, en este orden:
+        //   1. `largeTitleDisplayMode = .never` — sin efecto, no es un large
+        //      title clasico sino el layout nuevo de la barra.
+        //   2. `prefersLargeTitles = false` — sin efecto, por lo mismo.
+        //   3. Un `titleView` propio — se dibuja (verificado pintandole el fondo)
+        //      y respeta la tipografia del Theme, pero la barra lo alinea a la
+        //      izquierda igual. Centrarlo pedia darle un ancho fijo calculado a
+        //      mano, que se rompe en cuanto cambia el tamaño de pantalla o la
+        //      cantidad de botones.
+        //
+        // Se deja el comportamiento nativo. Si en algun momento molesta de
+        // verdad, la salida limpia es darle a las tres listas la misma
+        // estructura de botones, no pelearle a la barra.
+    }
 }
 
 extension UITableView {

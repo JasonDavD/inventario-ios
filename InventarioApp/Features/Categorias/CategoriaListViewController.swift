@@ -33,10 +33,9 @@ final class CategoriaListViewController: UIViewController {
 
     private func aplicarEstilos() {
         view.backgroundColor = Theme.Color.surfaceContainerLowest
-        title = "Categorias"
 
         tableView.aplicarEstiloDeLista()
-        aplicarAparienciaDeNavegacion()
+        aplicarAparienciaDeNavegacion(titulo: "Categorias")
         sincronizarButton.aplicarEstiloDeTexto(color: Theme.Color.charcoalDeep)
 
         emptyLabel.aplicar(

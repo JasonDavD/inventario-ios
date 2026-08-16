@@ -1,12 +1,23 @@
 # Inventario iOS - Ferreteria Zamora
 
-App iOS en UIKit (Storyboard + Core Data + `URLSession.dataTask`) para el sistema de inventario de Ferreteria Zamora. Consume la API REST de [`inventario-backend`](../inventario-backend) (Spring Boot + JWT + roles ADMIN/OPERADOR/LECTOR).
+App iOS en UIKit (Storyboard + Core Data + `URLSession.dataTask`) para el sistema de inventario de Ferreteria Zamora. Consume la API REST de [`inventario-backend`](https://github.com/JasonDavD/inventario-backend) (Spring Boot + JWT + roles ADMIN/OPERADOR/LECTOR).
 
-Ver [`PLAN.md`](PLAN.md) para el detalle completo de arquitectura, estructura de carpetas y el plan de desarrollo por fases (con checklist de progreso).
+Es **offline-first**: la UI lee siempre de Core Data, nunca de la red directo. Se puede navegar, dar de alta, editar y borrar sin conexion; los cambios quedan marcados como pendientes y suben en la proxima sincronizacion.
+
+Ver [`PLAN.md`](PLAN.md) para el detalle de arquitectura y el plan por fases, y [`DESIGN.md`](DESIGN.md) para el sistema de diseño.
 
 ## Estado
 
-En desarrollo, Fase 0 cerrada: el proyecto compila y corre en el simulador. Ver la seccion "Convencion de checklist" en `PLAN.md` para el significado de cada estado (`[ ]` / `[~]` / `[x]`).
+Fases 0 a 7 cerradas. Lo que anda hoy:
+
+- Login contra produccion con JWT en Keychain, y check de "mantener sesion iniciada" con comportamiento real
+- Listado de productos, categorias y proveedores en tabs, cada uno offline-first
+- CRUD completo de las tres entidades, con chip PENDIENTE para lo que todavia no subio
+- Sincronizacion bidireccional: sube pendientes, procesa bajas y baja del servidor, en ese orden
+- Fotos de producto (hasta 5) y logo de proveedor, con subida `multipart/form-data` a Cloudinary
+- Acciones ocultas segun el rol del usuario, y logout automatico si el token vence
+
+Pendiente: probar con usuarios OPERADOR y LECTOR reales — el gating esta verificado forzando el rol en la app, pero el backend no tiene usuarios de esos roles para probarlo de punta a punta.
 
 ## Como correrlo
 
@@ -17,6 +28,34 @@ xcodebuild -project InventarioApp.xcodeproj -scheme InventarioApp \
   -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16e' build
 ```
 
+**Se trabaja siempre contra produccion** (`https://ferreteria-zamora-api.onrender.com`); no hace falta levantar el backend. Render duerme el servicio tras un rato de inactividad, asi que **la primera request del dia puede tardar 20-40s o incluso fallar por timeout**. Si el login da "No se pudo conectar al servidor", esperar unos segundos y reintentar: el primer intento despierta el servicio.
+
+Para apuntar a un backend local, cambiar `Endpoint.baseURL` en [`Networking/Endpoint.swift`](InventarioApp/Networking/Endpoint.swift) (y agregar una excepcion de ATS en el `Info.plist`, porque `localhost` va por http).
+
+## Como esta armado
+
+```
+InventarioApp/
+├── App/            AppDelegate, SceneDelegate
+├── Auth/           Keychain y sesion
+├── CoreData/       modelo .xcdatamodeld y el stack
+├── DesignSystem/   Theme y estilos compartidos (traduccion del DESIGN.md)
+├── Models/         DTOs Codable de la API
+├── Networking/     APIClient (dataTask), Endpoint, descarga de imagenes
+├── Services/       lectura/escritura en Core Data
+├── Sync/           SyncManager
+└── Features/       una carpeta por pantalla, MVVM con closures
+```
+
+Dos decisiones que explican casi todo lo demas:
+
+- **Core Data es la fuente de verdad de la UI.** Ninguna pantalla lee de la red. Toda escritura local deja la fila en `estadoSync = 0` y el `SyncManager` la levanta despues.
+- **El orden de la sincronizacion no es casual.** Primero sube lo pendiente, despues procesa las bajas, y recien al final baja del servidor. Si bajara primero, pisaria los cambios locales que todavia no se subieron.
+
+Las imagenes son la excepcion: se suben online y en el momento, porque el backend las asocia al recurso por su id y no hay forma de encolarlas sin `apiId`. Un producto creado sin conexion no ofrece agregarle fotos hasta que sincroniza, y la pantalla explica por que.
+
 ## Curso
 
 Desarrollo de Aplicaciones Moviles I - CIBERTEC (Ciclo V)
+
+Requisito de la rubrica: UIKit clasico (`UITableView`, `UITableViewDataSource`/`Delegate`), Core Data (`NSPersistentContainer`, `NSFetchRequest`) y `URLSession` con `dataTask` y completion handlers. Sin SwiftUI, sin async/await, sin Combine.

@@ -31,10 +31,9 @@ final class ProveedorListViewController: UIViewController {
 
     private func aplicarEstilos() {
         view.backgroundColor = Theme.Color.surfaceContainerLowest
-        title = "Proveedores"
 
         tableView.aplicarEstiloDeLista()
-        aplicarAparienciaDeNavegacion()
+        aplicarAparienciaDeNavegacion(titulo: "Proveedores")
         sincronizarButton.aplicarEstiloDeTexto(color: Theme.Color.charcoalDeep)
 
         emptyLabel.aplicar(

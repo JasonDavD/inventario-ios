@@ -1,4 +1,5 @@
 import UIKit
+import CoreData
 
 /// Subida y baja de imagenes de producto y del logo de proveedor.
 ///
@@ -54,7 +55,23 @@ struct ImagenService {
         APIClient.shared.delete(
             .imagenDeProducto(apiId: apiId, imagenId: imagenId)
         ) { (resultado: Result<RespuestaVacia, APIError>) in
-            Self.refrescarSiSalioBien(resultado, completion: completion)
+            switch resultado {
+            case .success:
+                Self.borrarFilaLocal(imagenId: imagenId)
+                Self.refrescar(completion)
+            case .failure(let error):
+                // Un 404 significa que en el servidor ya no esta: el objetivo ya
+                // se cumplio. Es el mismo criterio que usa `SyncManager` con las
+                // bajas de entidades, y sin esto el borrado queda trabado —
+                // reintentar siempre devuelve 404 y se ve como "Error del
+                // servidor" aunque la foto ya no exista.
+                if case .server(let status, _) = error, status == 404 {
+                    Self.borrarFilaLocal(imagenId: imagenId)
+                    Self.refrescar(completion)
+                } else {
+                    completion(.failure(error))
+                }
+            }
         }
     }
 
@@ -93,7 +110,38 @@ struct ImagenService {
         case .failure(let error):
             completion(.failure(error))
         case .success:
-            SyncManager.shared.descargarDelServidor(completion: completion)
+            refrescar(completion)
         }
+    }
+
+    /// Vuelve a bajar del servidor, **pero el resultado de esa bajada no decide
+    /// si la operacion salio bien**.
+    ///
+    /// Antes esto encadenaba el `Result` de la bajada directo al completion, y
+    /// era un error: para cuando se llama, la subida o el borrado contra el
+    /// servidor YA ocurrieron. Si la bajada fallaba —y con Render dormido falla
+    /// seguido— la pantalla decia "no se pudo completar" sobre algo que si se
+    /// habia hecho. Peor: el usuario reintentaba, el DELETE devolvia 404 porque
+    /// la foto ya no estaba, y volvia a ver un error.
+    ///
+    /// Si la bajada falla, la copia local queda desactualizada hasta la proxima
+    /// sincronizacion, que es un problema mucho menor que mentir sobre el
+    /// resultado.
+    private static func refrescar(_ completion: @escaping (Result<Void, APIError>) -> Void) {
+        SyncManager.shared.descargarDelServidor { _ in
+            completion(.success(()))
+        }
+    }
+
+    /// Saca la fila local sin esperar a la bajada, para que la galeria quede
+    /// bien aunque el refresh no llegue a correr.
+    private static func borrarFilaLocal(imagenId: Int64) {
+        let contexto = PersistenceController.shared.viewContext
+        let request = NSFetchRequest<ProductoImagenEntity>(entityName: "ProductoImagenEntity")
+        request.predicate = NSPredicate(format: "apiId == %@", NSNumber(value: imagenId))
+
+        let existentes = (try? contexto.fetch(request)) ?? []
+        existentes.forEach { contexto.delete($0) }
+        PersistenceController.shared.saveContext()
     }
 }

@@ -292,6 +292,8 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 
 > **Estas operaciones son online y no pasan por el `SyncManager`.** El backend asocia el archivo al recurso padre por su id, asi que no se pueden encolar sin `apiId`. Es la limitacion de diseño que este plan ya anticipaba, ahora con la UI que la explica en pantalla en vez de dejar un boton que falla.
 
+> **Bug encontrado despues de cerrar la fase: "Error del servidor" al borrar fotos.** Eran dos errores encadenados, los dos en `ImagenService`. (1) Tras un DELETE exitoso se encadenaba el `Result` de la bajada posterior directo al completion, asi que si esa bajada fallaba —con Render dormido pasa seguido— la pantalla decia que no se pudo borrar algo que **si** se habia borrado. (2) El usuario reintentaba, el backend devolvia 404 porque la foto ya no estaba, y `borrarImagen` trataba ese 404 como fallo, con lo cual el borrado quedaba trabado mostrando "Error del servidor" para siempre. Ahora un 404 se toma como exito —mismo criterio que ya usaba `SyncManager` con las bajas de entidades— y el refresh posterior no decide el resultado de la operacion. Ademas la fila local se borra en el momento, para que la galeria quede bien aunque el refresh no llegue a correr. No se pudo reproducir en la primera pasada de Fase 5 porque el servidor estaba caliente y solo se probo con una imagen.
+
 > **`PHPickerViewController` y no `UIImagePickerController`.** Corre fuera del proceso de la app: no necesita permiso de fototeca ni entrada en el `Info.plist`, y la app solo recibe la foto elegida. Verificado — el selector abre sin ningun prompt de permisos.
 
 ## Fase 6 — Categorias y Proveedores (+ logo)

@@ -97,7 +97,11 @@ final class VisorDeImagenesViewController: UIViewController {
         eliminarButton.setImage(UIImage(systemName: "trash"), for: .normal)
         eliminarButton.tintColor = Theme.Color.onPrimary
         eliminarButton.addTarget(self, action: #selector(eliminarTapped), for: .touchUpInside)
-        eliminarButton.isHidden = !puedeBorrar
+        // `alpha` y no `isHidden`: ocultarlo con `isHidden` lo saca del stack,
+        // el contador se estira para ocupar su lugar y queda corrido a la
+        // derecha en vez de centrado. Asi el boton sigue reservando su ancho.
+        eliminarButton.alpha = puedeBorrar ? 1 : 0
+        eliminarButton.isUserInteractionEnabled = puedeBorrar
 
         contadorLabel.textAlignment = .center
 

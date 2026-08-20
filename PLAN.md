@@ -357,9 +357,40 @@ Se rehizo la escena siguiendo `DESIGN.md`: card blanca sobre fondo `surface`, ic
 
 > **Por que usuarios NO es offline-first.** Es la unica parte de la app, junto con las imagenes, que va contra el servidor en el momento. Dos razones: dar de alta un usuario sin conexion no significa nada porque el backend hashea el password y valida que el `username` sea unico, y guardar usuarios en Core Data implicaria tener contraseñas en el SQLite del dispositivo. No hay `UsuarioEntity` ni nada de esto pasa por el `SyncManager`.
 
-> **Por que no Firebase.** Se evaluo mover los usuarios a Firebase Auth. Es posible, pero el backend seguiria necesitando su propio endpoint de ABM: los custom claims (donde irian los roles) solo se setean con el Admin SDK desde un entorno privilegiado, nunca desde la app — si la app pudiera, cualquiera se haria ADMIN. O sea, Firebase ahorra guardar contraseñas pero no ahorra el endpoint, y ademas obligaba a: reconfigurar Spring como resource server, rehacer `APIClient` para pedir un token fresco antes de cada request (el de Firebase dura 1h y lo rota el SDK), tirar buena parte de `KeychainService`/`SessionManager` y reimplementar "mantener sesion iniciada". Con el ABM ya hecho en el backend, el costo no compraba nada.
+> **Por que no Firebase *para los usuarios*.** (Esta nota es sobre **Firebase Auth**. La app **si** usa Firebase como base de datos desde la Fase 9 — son productos distintos y la decision de aca no aplica a aquello.) Se evaluo mover los usuarios a Firebase Auth. Es posible, pero el backend seguiria necesitando su propio endpoint de ABM: los custom claims (donde irian los roles) solo se setean con el Admin SDK desde un entorno privilegiado, nunca desde la app — si la app pudiera, cualquiera se haria ADMIN. O sea, Firebase ahorra guardar contraseñas pero no ahorra el endpoint, y ademas obligaba a: reconfigurar Spring como resource server, rehacer `APIClient` para pedir un token fresco antes de cada request (el de Firebase dura 1h y lo rota el SDK), tirar buena parte de `KeychainService`/`SessionManager` y reimplementar "mantener sesion iniciada". Con el ABM ya hecho en el backend, el costo no compraba nada.
 
 > **El repo del backend ahora esta clonado al lado** (`../inventario-backend`), como pedia la seccion "Backend consumido". Sirvio para confirmar el contrato exacto del ABM y, de paso, que `CustomUserDetailsService` arma las authorities como `"ROLE_" + rol.name()` — o sea que la normalizacion del prefijo en `SessionManager.hasRole` era necesaria de verdad.
+
+## Fase 9 — Bitacora de auditoria en Firebase
+
+**La unica entidad de la app que no vive ni en Core Data ni en el backend propio.** Registra cada alta, edicion y baja de producto, categoria y proveedor: que se hizo, sobre que, quien y cuando. Se eligio esta entidad y no una copia de algo existente justamente para que no haya dos fuentes de verdad para el mismo dato — el backend guarda el estado actual de cada registro, la bitacora guarda como se llego a el.
+
+- [x] `firebase-ios-sdk` 12.18.0 por Swift Package Manager, **solo el producto `FirebaseDatabase`** (sin Analytics). Agregado editando `project.pbxproj` a mano y verificado compilando
+- [x] `Resources/GoogleService-Info.plist`: generado por la consola de Firebase para el bundle `com.inventario.app`. Entra al bundle solo, porque el grupo sincronizado solo excluye `Resources/Info.plist`
+- [x] `AppDelegate`: `FirebaseApp.configure()` al arrancar. Lee el plist por su cuenta, asi que **la app no tiene ninguna URL de Firebase escrita en el codigo**
+- [x] `Models/Bitacora/EventoBitacora.swift`: accion, entidad, nombre, usuario, fecha ISO y `timestamp` para ordenar, con conversion a y desde `[String: Any]`
+- [x] `Services/BitacoraService.swift`: `registrar` (`childByAutoId().setValue`) y `todos` (`queryOrdered(byChild:).observeSingleEvent`)
+- [x] Los seis puntos donde el usuario modifica datos registran su evento: alta/edicion/baja de producto, categoria y proveedor
+- [x] `Features/Bitacora/`: lista + ViewModel, reusando `CatalogoTableViewCell`. Escena nueva en el Storyboard y segue `irABitacora` desde Cuenta
+- [x] La fila vive en la seccion Administracion, solo para ADMIN: una auditoria es para quien controla lo que hacen los demas
+- [x] **Funcional:** verificado contra el proyecto real de Firebase — se creo y se elimino una categoria de prueba, los eventos aparecieron en la base (confirmado con `curl` sobre `/bitacora.json`) y la pantalla los muestra ordenados con usuario y hora local
+- [x] **Probado:** corrido en el simulador iPhone 17 Pro con usuario ADMIN. Las categorias de prueba nunca se sincronizaron, asi que **el backend de produccion no se toco**
+
+> **Se empezo con REST y se rehizo con el SDK.** La primera version hablaba con Realtime Database por su API REST (`GET/POST` sobre `<base>/<ruta>.json`) usando el `APIClient` que ya existia: cero dependencias y seguia siendo `URLSession` + `dataTask`. Al confirmarse que **la rubrica exige el SDK instalado**, se migro. La migracion fue barata justamente porque el acceso a Firebase estaba encapsulado en `BitacoraService`: cambio ese archivo por dentro y ninguna pantalla se entero. Se borraron `Networking/FirebaseConfig.swift` (el SDK lee el plist solo) y los dos verbos que se le habian agregado al `APIClient` para hablar con hosts externos, que quedaron sin usar.
+>
+> **El requisito de `dataTask` sigue cumpliendose:** todo el consumo del backend de Spring — que es lo que la rubrica pide — sigue con `URLSession` y completion handlers. Lo unico que usa el SDK es Firebase.
+
+> **Solo `FirebaseDatabase`, sin Analytics.** El SDK es un monorepo y se elige por producto. Analytics quedo afuera a proposito: no aporta nada a la app y arrastra `GoogleAppMeasurement` y su cadena de dependencias. Si en algun momento se quiere que la consola muestre metricas de uso, se agrega el producto `FirebaseAnalytics` al mismo paquete.
+
+> **La bitacora no puede romper una operacion del usuario.** `registrar` no devuelve error ni tiene completion: si Firebase no contesta, el producto ya se guardo igual. `setValue` sin completion es literalmente "dispara y olvida" — el SDK reintenta por su cuenta si el envio no llega.
+
+> **El nombre se lee ANTES de borrar.** En las bajas, leer `nombre` despues de marcar la eliminacion deja la entrada sin con que nombrar el registro. Por eso las tres bajas guardan el nombre en una variable primero. La entrada guarda el nombre y no solo el id a proposito: tiene que seguir siendo legible cuando el registro ya no exista.
+
+> **Diccionario y no `Codable`.** El SDK trabaja con `[String: Any]` en `setValue` y devuelve lo mismo en el snapshot, asi que pasar por `JSONEncoder` seria traducir dos veces. `init?(diccionario:)` devuelve `nil` si el nodo no tiene la forma esperada: una entrada corrupta se saltea en vez de tumbar la lista. Como el formato de los campos no cambio al migrar, **el SDK lee sin problema los eventos que habia escrito la version REST** — verificado.
+
+> **`observeSingleEvent` y no `observe`.** La pantalla no necesita actualizarse en vivo, y una suscripcion viva habria que darla de baja al salir o queda escuchando para siempre. `queryOrdered(byChild: "timestamp")` devuelve de menor a mayor, asi que la lista se invierte: aca interesa lo ultimo primero.
+
+> **Las reglas de la base estan en modo de prueba, o sea abiertas.** Cualquiera con la URL puede leer y escribir, y Firebase las cierra sola a los 30 dias de creada la base. Para un trabajo de curso alcanza, pero **no hay que meter datos reales de clientes ahi**, y conviene borrar el proyecto de Firebase al cerrar la materia. El plist en el repo publico no es el problema: ese archivo esta pensado para viajar dentro de la app — lo que protege una base de Firebase son las reglas, no el archivo.
 
 ---
 

@@ -9,7 +9,11 @@ final class ProveedorListViewController: UIViewController {
 
     private let viewModel = CatalogoListViewModel<ProveedorEntity>(
         cargar: { ProveedorService().todos() },
-        borrar: { ProveedorService().marcarParaEliminar($0) }
+        borrar: {
+            let nombre = $0.nombre ?? "(sin nombre)"
+            ProveedorService().marcarParaEliminar($0)
+            BitacoraService.shared.registrar(.elimino, sobre: .proveedor, nombre: nombre)
+        }
     )
     private let refreshControl = UIRefreshControl()
 

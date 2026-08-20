@@ -54,6 +54,18 @@ Dos decisiones que explican casi todo lo demas:
 
 Las imagenes son la excepcion: se suben online y en el momento, porque el backend las asocia al recurso por su id y no hay forma de encolarlas sin `apiId`. Un producto creado sin conexion no ofrece agregarle fotos hasta que sincroniza, y la pantalla explica por que.
 
+## Bitacora en Firebase
+
+La app guarda **una** entidad fuera de Core Data y fuera del backend propio: la bitacora de auditoria, en **Firebase Realtime Database**. Cada alta, edicion o baja de producto, categoria o proveedor deja una entrada con que se hizo, quien lo hizo y cuando. Se ve en Cuenta - Bitacora, solo para ADMIN.
+
+Se eligio una entidad que ninguna de las otras dos fuentes tiene: el backend guarda el estado actual de cada registro, la bitacora guarda como se llego a el. Asi no hay dos fuentes de verdad para el mismo dato.
+
+**Se usa el SDK oficial** (`firebase-ios-sdk`, solo el producto `FirebaseDatabase`), agregado por Swift Package Manager. Xcode lo resuelve solo al abrir el proyecto. La configuracion sale del `GoogleService-Info.plist` (`Resources/`) via `FirebaseApp.configure()`, asi que no hay ninguna URL de Firebase escrita en el codigo.
+
+El resto de la app no cambia: todo el consumo del backend de Spring sigue con `URLSession` y `dataTask`. El SDK se usa unicamente para Firebase.
+
+> Las reglas de la base estan en modo de prueba (abiertas). Es una app de curso y no guarda datos reales de clientes.
+
 ## Curso
 
 Desarrollo de Aplicaciones Moviles I - CIBERTEC (Ciclo V)

@@ -12,11 +12,13 @@ final class CuentaViewController: UIViewController {
 
     private enum Fila {
         case usuarios
+        case bitacora
         case cerrarSesion
 
         var titulo: String {
             switch self {
             case .usuarios: return "Usuarios"
+            case .bitacora: return "Bitacora"
             case .cerrarSesion: return "Cerrar sesion"
             }
         }
@@ -24,6 +26,7 @@ final class CuentaViewController: UIViewController {
         var detalle: String? {
             switch self {
             case .usuarios: return "Dar de alta, editar roles y dar de baja"
+            case .bitacora: return "Historial de altas, ediciones y bajas"
             case .cerrarSesion: return nil
             }
         }
@@ -31,6 +34,7 @@ final class CuentaViewController: UIViewController {
         var icono: String {
             switch self {
             case .usuarios: return "person.2"
+            case .bitacora: return "clock.arrow.circlepath"
             case .cerrarSesion: return "rectangle.portrait.and.arrow.right"
             }
         }
@@ -68,7 +72,7 @@ final class CuentaViewController: UIViewController {
         var armadas: [Seccion] = []
 
         if SessionManager.shared.esAdmin {
-            armadas.append(Seccion(titulo: "Administracion", filas: [.usuarios]))
+            armadas.append(Seccion(titulo: "Administracion", filas: [.usuarios, .bitacora]))
         }
         armadas.append(Seccion(titulo: nil, filas: [.cerrarSesion]))
 
@@ -186,7 +190,7 @@ extension CuentaViewController: UITableViewDataSource {
         config.secondaryTextProperties.color = Theme.Color.charcoalMuted
 
         switch fila {
-        case .usuarios:
+        case .usuarios, .bitacora:
             config.textProperties.color = Theme.Color.charcoalDeep
             config.imageProperties.tintColor = Theme.Color.charcoalDeep
             celda.accessoryType = .disclosureIndicator
@@ -212,6 +216,8 @@ extension CuentaViewController: UITableViewDelegate {
         switch secciones[indexPath.section].filas[indexPath.row] {
         case .usuarios:
             performSegue(withIdentifier: "irAUsuarios", sender: nil)
+        case .bitacora:
+            performSegue(withIdentifier: "irABitacora", sender: nil)
         case .cerrarSesion:
             confirmarCerrarSesion()
         }

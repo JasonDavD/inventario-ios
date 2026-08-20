@@ -33,11 +33,15 @@ final class CategoriaFormViewModel {
         let descripcionLimpia = descripcion.trimmingCharacters(in: .whitespacesAndNewlines)
         let descripcionFinal = descripcionLimpia.isEmpty ? nil : descripcionLimpia
 
+        let esAlta = categoria == nil
+
         if let categoria {
             service.actualizar(categoria, nombre: nombreLimpio, descripcion: descripcionFinal)
         } else {
             categoria = service.crear(nombre: nombreLimpio, descripcion: descripcionFinal)
         }
+
+        BitacoraService.shared.registrar(esAlta ? .creo : .edito, sobre: .categoria, nombre: nombreLimpio)
         return nil
     }
 }

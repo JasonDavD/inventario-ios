@@ -23,7 +23,12 @@ final class ProductoListViewModel {
     /// confirme contra el servidor, pero desaparece de la lista al instante.
     func eliminar(en indice: Int) {
         guard productos.indices.contains(indice) else { return }
-        ProductoService().marcarParaEliminar(productos[indice])
+        let producto = productos[indice]
+        // El nombre se lee ANTES de marcar la baja: despues la fila puede no
+        // estar mas y la entrada de la bitacora quedaria sin con que nombrarla.
+        let nombre = producto.nombre ?? "(sin nombre)"
+        ProductoService().marcarParaEliminar(producto)
+        BitacoraService.shared.registrar(.elimino, sobre: .producto, nombre: nombre)
         cargarLocales()
     }
 

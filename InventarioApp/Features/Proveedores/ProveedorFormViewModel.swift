@@ -71,6 +71,8 @@ final class ProveedorFormViewModel {
         let telefonoFinal = Self.opcional(telefono)
         let direccionFinal = Self.opcional(direccion)
 
+        let esAlta = proveedor == nil
+
         if let proveedor {
             service.actualizar(
                 proveedor,
@@ -85,6 +87,8 @@ final class ProveedorFormViewModel {
                 direccion: direccionFinal
             )
         }
+
+        BitacoraService.shared.registrar(esAlta ? .creo : .edito, sobre: .proveedor, nombre: nombreLimpio)
         return nil
     }
 

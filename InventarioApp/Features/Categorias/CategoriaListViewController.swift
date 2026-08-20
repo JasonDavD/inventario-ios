@@ -9,7 +9,11 @@ final class CategoriaListViewController: UIViewController {
 
     private let viewModel = CatalogoListViewModel<CategoriaEntity>(
         cargar: { CategoriaService().todas() },
-        borrar: { CategoriaService().marcarParaEliminar($0) }
+        borrar: {
+            let nombre = $0.nombre ?? "(sin nombre)"
+            CategoriaService().marcarParaEliminar($0)
+            BitacoraService.shared.registrar(.elimino, sobre: .categoria, nombre: nombre)
+        }
     )
     private let refreshControl = UIRefreshControl()
 

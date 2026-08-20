@@ -46,6 +46,8 @@ final class ProductoFormViewModel {
             return "El stock tiene que ser un numero entero mayor o igual a cero"
         }
 
+        let esAlta = producto == nil
+
         if let producto {
             service.actualizar(
                 producto,
@@ -64,6 +66,10 @@ final class ProductoFormViewModel {
                 proveedor: proveedorSeleccionado
             )
         }
+
+        // Se registra despues de guardar y no antes: la bitacora deja constancia
+        // de lo que efectivamente paso.
+        BitacoraService.shared.registrar(esAlta ? .creo : .edito, sobre: .producto, nombre: nombreLimpio)
         return nil
     }
 

@@ -1308,6 +1308,7 @@
                     <connections>
                         <outlet property="tableView" destination="tbl-cu-001" id="out-cu-001"/>
                         <segue destination="ULV-00-001" kind="show" identifier="irAUsuarios" id="sg-cu-001"/>
+                        <segue destination="BLV-00-001" kind="show" identifier="irABitacora" id="sg-cu-002"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cuv-fr-001" sceneMemberID="firstResponder"/>
@@ -1417,6 +1418,109 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ulv-fr-001" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1500" y="-1680"/>
+        </scene>
+        <!--Bitacora-->
+        <scene sceneID="bit-sc-001">
+            <objects>
+                <viewController id="BLV-00-001" customClass="BitacoraListViewController" customModule="InventarioApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="blv-vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="72" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="tbl-bi-001">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="749"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="CatalogoCell" rowHeight="72" id="cel-bi-001" customClass="CatalogoTableViewCell" customModule="InventarioApp" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cel-bi-001" id="cnt-bi-001">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="72"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Accion" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-bn-001">
+                                                    <rect key="frame" x="20" y="14" width="200" height="24"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Usuario y fecha" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-bd-001">
+                                                    <rect key="frame" x="20" y="42" width="200" height="20"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chp-bp-001">
+                                                    <rect key="frame" x="281" y="24" width="92" height="24"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PENDIENTE" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-bp-001">
+                                                            <rect key="frame" x="8" y="4" width="76" height="16"/>
+                                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="lbl-bp-001" firstAttribute="leading" secondItem="chp-bp-001" secondAttribute="leading" constant="8" id="cst-bc-001"/>
+                                                        <constraint firstAttribute="trailing" secondItem="lbl-bp-001" secondAttribute="trailing" constant="8" id="cst-bc-002"/>
+                                                        <constraint firstItem="lbl-bp-001" firstAttribute="top" secondItem="chp-bp-001" secondAttribute="top" constant="4" id="cst-bc-003"/>
+                                                        <constraint firstAttribute="bottom" secondItem="lbl-bp-001" secondAttribute="bottom" constant="4" id="cst-bc-004"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="lbl-bn-001" firstAttribute="leading" secondItem="cnt-bi-001" secondAttribute="leading" constant="20" id="cst-bx-001"/>
+                                                <constraint firstItem="lbl-bn-001" firstAttribute="top" secondItem="cnt-bi-001" secondAttribute="top" constant="14" id="cst-bx-002"/>
+                                                <constraint firstItem="lbl-bd-001" firstAttribute="leading" secondItem="cnt-bi-001" secondAttribute="leading" constant="20" id="cst-bx-003"/>
+                                                <constraint firstItem="lbl-bd-001" firstAttribute="top" secondItem="lbl-bn-001" secondAttribute="bottom" constant="4" id="cst-bx-004"/>
+                                                <constraint firstAttribute="bottom" secondItem="lbl-bd-001" secondAttribute="bottom" constant="14" id="cst-bx-005"/>
+                                                <constraint firstItem="chp-bp-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lbl-bn-001" secondAttribute="trailing" constant="12" id="cst-bx-006"/>
+                                                <constraint firstItem="chp-bp-001" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lbl-bd-001" secondAttribute="trailing" constant="12" id="cst-bx-007"/>
+                                                <constraint firstAttribute="trailing" secondItem="chp-bp-001" secondAttribute="trailing" constant="20" id="cst-bx-008"/>
+                                                <constraint firstItem="chp-bp-001" firstAttribute="centerY" secondItem="cnt-bi-001" secondAttribute="centerY" id="cst-bx-009"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="detalleLabel" destination="lbl-bd-001" id="out-bc-001"/>
+                                            <outlet property="nombreLabel" destination="lbl-bn-001" id="out-bc-002"/>
+                                            <outlet property="pendienteChipView" destination="chp-bp-001" id="out-bc-003"/>
+                                            <outlet property="pendienteLabel" destination="lbl-bp-001" id="out-bc-004"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-be-001">
+                                <rect key="frame" x="40" y="360" width="313" height="40"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="act-bi-001">
+                                <rect key="frame" x="186.5" y="310" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="blv-sa-001"/>
+                        <constraints>
+                            <constraint firstItem="tbl-bi-001" firstAttribute="leading" secondItem="blv-vw-001" secondAttribute="leading" id="cst-bv-001"/>
+                            <constraint firstAttribute="trailing" secondItem="tbl-bi-001" secondAttribute="trailing" id="cst-bv-002"/>
+                            <constraint firstItem="tbl-bi-001" firstAttribute="top" secondItem="blv-vw-001" secondAttribute="top" id="cst-bv-003"/>
+                            <constraint firstAttribute="bottom" secondItem="tbl-bi-001" secondAttribute="bottom" id="cst-bv-004"/>
+                            <constraint firstItem="lbl-be-001" firstAttribute="leading" secondItem="blv-sa-001" secondAttribute="leading" constant="40" id="cst-bv-005"/>
+                            <constraint firstItem="blv-sa-001" firstAttribute="trailing" secondItem="lbl-be-001" secondAttribute="trailing" constant="40" id="cst-bv-006"/>
+                            <constraint firstItem="lbl-be-001" firstAttribute="centerY" secondItem="blv-vw-001" secondAttribute="centerY" id="cst-bv-007"/>
+                            <constraint firstItem="act-bi-001" firstAttribute="centerX" secondItem="blv-vw-001" secondAttribute="centerX" id="cst-bv-008"/>
+                            <constraint firstItem="lbl-be-001" firstAttribute="top" secondItem="act-bi-001" secondAttribute="bottom" constant="30" id="cst-bv-009"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Bitacora" id="nvi-bi-001"/>
+                    <connections>
+                        <outlet property="activityIndicator" destination="act-bi-001" id="out-bv-001"/>
+                        <outlet property="emptyLabel" destination="lbl-be-001" id="out-bv-002"/>
+                        <outlet property="tableView" destination="tbl-bi-001" id="out-bv-003"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="blv-fr-001" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1500" y="-980"/>
         </scene>
         <!--Formulario de usuario-->
         <scene sceneID="ufm-sc-001">

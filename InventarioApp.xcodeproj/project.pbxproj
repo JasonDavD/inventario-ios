@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1A0000000000000000000022 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000000000000000000021 /* FirebaseDatabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1A0000000000000000000004 /* InventarioApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InventarioApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A0000000000000000000022 /* FirebaseDatabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = InventarioApp;
 			packageProductDependencies = (
+				1A0000000000000000000021 /* FirebaseDatabase */,
 			);
 			productName = InventarioApp;
 			productReference = 1A0000000000000000000004 /* InventarioApp.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = 1A0000000000000000000002;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1A0000000000000000000020 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1A0000000000000000000003 /* Products */;
 			projectDirPath = "";
@@ -321,6 +330,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1A0000000000000000000020 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.18.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1A0000000000000000000021 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A0000000000000000000020 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1A0000000000000000000001 /* Project object */;
 }

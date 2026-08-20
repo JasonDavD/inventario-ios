@@ -1,3 +1,4 @@
+import FirebaseCore
 import UIKit
 
 @main
@@ -7,6 +8,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        // Tiene que correr antes que cualquier uso del SDK. Lee el
+        // `GoogleService-Info.plist` del bundle por su cuenta: por eso la app no
+        // tiene ninguna URL de Firebase escrita en el codigo.
+        FirebaseApp.configure()
         return true
     }
 

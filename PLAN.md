@@ -30,10 +30,11 @@ Las pantallas siguen [`DESIGN.md`](DESIGN.md) ("Precision Minimalist"), que esta
 - **Modo oscuro:** la paleta es solo modo claro, asi que la app fuerza `UIUserInterfaceStyle = Light` en el `Info.plist`. Sin eso los colores fijos del `Theme` conviven con los del sistema y la pantalla queda ilegible.
 - **Reparto storyboard/codigo:** el storyboard tiene la estructura (jerarquia de vistas, constraints, outlets); el estilado va en `viewDidLoad` desde el `Theme`. Tracking tipografico, bordes de 1px, radios y estados de foco no se pueden expresar en el editor visual.
 
-#### Dos trampas de UIKit que ya costaron tiempo
+#### Tres trampas de UIKit que ya costaron tiempo
 
 1. **`UIButton.Configuration` pisa la fuente del titulo.** Setear `config.attributedTitle` con una fuente NO alcanza: UIKit reaplica la suya y el titulo sale en el tamaño por defecto. El unico punto que respeta es `config.titleTextAttributesTransformer`. Sintoma: todo compila y corre, pero los botones se ven con la tipografia equivocada.
 2. **Forzar `lineHeight` desalinea el texto verticalmente.** Al fijar `minimumLineHeight`/`maximumLineHeight` en el `NSParagraphStyle`, el texto queda pegado al borde superior; se compensa con `baselineOffset`.
+3. **Una clase de celda compartida por varios prototipos no puede tener outlets `!` que no esten en todos.** `CatalogoTableViewCell` la usan cuatro escenas (categorias, proveedores, usuarios y bitacora) y solo proveedores tiene logo. Un `@IBOutlet weak var logoImageView: UIImageView!` sin conectar en las otras tres las crashea apenas alguien lo toque — y `awakeFromNib` corre en todas. La salida es declararlo opcional (`UIImageView?`) y que cada escena conecte lo que tiene. Mismo problema, al reves, en la celda de la bitacora: como `awakeFromNib` toca `pendienteChipView` sin preguntar, ese prototipo **si** tiene que incluir el chip aunque no lo use.
 
 ### Entorno verificado
 

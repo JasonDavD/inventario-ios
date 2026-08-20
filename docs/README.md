@@ -5,6 +5,7 @@ Material de entrega del proyecto.
 | Archivo | Que es |
 |---|---|
 | `Arquitectura-App.pdf` | Como funciona la app por dentro, recorrida por procesos: arrancar, entrar, leer, guardar, sincronizar |
+| `CoreData.pdf` | Core Data en detalle: modelado, consultas, escritura y las trampas |
 | `Firebase-Implementacion.pdf` | La integracion de Firebase en detalle, archivo por archivo |
 | `GUION-EXPOSICION.md` | Guion de 14 slides para la sustentacion |
 
@@ -16,6 +17,7 @@ toca el script y se vuelve a correr:
 ```
 pip3 install reportlab
 python3 docs/generar-arquitectura.py
+python3 docs/generar-coredata.py
 python3 docs/generar-firebase.py
 ```
 

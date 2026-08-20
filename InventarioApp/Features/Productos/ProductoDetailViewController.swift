@@ -242,36 +242,24 @@ extension ProductoDetailViewController: UICollectionViewDataSource {
 
 extension ProductoDetailViewController: UICollectionViewDelegate {
 
+    /// Tocar una foto la abre en grande. El borrado vive adentro del visor: al
+    /// tocar una miniatura lo que se espera es verla, no un menu de acciones.
+    /// Ver la foto no pide permisos, asi que esto tambien funciona para LECTOR.
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-        guard viewModel.puedeGestionarImagenes else { return }
 
-        let hoja = UIAlertController(title: "Foto", message: nil, preferredStyle: .actionSheet)
-        hoja.addAction(UIAlertAction(title: "Eliminar foto", style: .destructive) { [weak self] _ in
-            self?.confirmarBorrado(en: indexPath.item)
-        })
-        hoja.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
-
-        // Obligatorio en iPad: sin esto el action sheet crashea por no tener
-        // desde donde anclarse.
-        let celda = collectionView.cellForItem(at: indexPath)
-        hoja.popoverPresentationController?.sourceView = celda ?? collectionView
-        hoja.popoverPresentationController?.sourceRect = (celda ?? collectionView).bounds
-
-        present(hoja, animated: true)
-    }
-
-    private func confirmarBorrado(en indice: Int) {
-        let alert = UIAlertController(
-            title: "Eliminar foto",
-            message: "Se borra del servidor ahora mismo. Esta accion no se puede deshacer.",
-            preferredStyle: .alert
+        // `map` y no `compactMap`: si alguna url viniera nil, descartarla
+        // correria los indices y el visor borraria la foto equivocada.
+        let visor = VisorDeImagenesViewController(
+            urls: viewModel.imagenes.map { $0.url ?? "" },
+            indiceInicial: indexPath.item,
+            puedeBorrar: viewModel.puedeGestionarImagenes
         )
-        alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Eliminar", style: .destructive) { [weak self] _ in
+        // El visor ya pidio confirmacion antes de avisar, no se vuelve a pedir.
+        visor.alPedirBorrar = { [weak self] indice in
             self?.viewModel.borrar(en: indice)
-        })
-        present(alert, animated: true)
+        }
+        present(visor, animated: true)
     }
 }
 
